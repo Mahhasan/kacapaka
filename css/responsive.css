@@ -35,7 +35,27 @@
         --bs-gutter-x: .75rem
     }
     .fruite .tab-class .nav-item span {
-        font-size: 14px;
+        font-size: 14px !important;
     }
-
+}
+@media (min-width: 768px) {
+    .top-md-10{
+        top: 10px !important;
+    }
+    .left-md-10{
+        left: 10px !important;
+    }
+    .text-md-16{
+        font-size: 16px !important;
+    }
+}
+@media (min-width: 1200px) {
+    .text-xl-14{
+        font-size: 14px !important;
+    }
+}
+@media (min-width: 1400px) {
+    .text-xxl-16{
+        font-size: 16px !important;
+    }
 }
