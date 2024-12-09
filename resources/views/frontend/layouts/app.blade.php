@@ -2,7 +2,7 @@
 <html>
     <head>
     <meta charset="utf-8">
-        <title>E-commerce</title>
+        <title>{{ config('app.name', 'কাঁচাপাকা') }}</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="" name="keywords">
         <meta content="" name="description">
@@ -10,7 +10,7 @@
         <!-- Google Web Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap" rel="stylesheet">
 
         <!-- Icon Font Stylesheet -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
@@ -27,14 +27,14 @@
         <link href="{{asset('frontend/css/style.css')}}" rel="stylesheet">
         <link href="{{asset('frontend/css/custom.css')}}" rel="stylesheet">
         <link href="{{asset('frontend/css/responsive.css')}}" rel="stylesheet">
-        <link rel="icon" sizes="24x24" href="img/logo/logo-3.png">
+        <link rel="icon" sizes="24x24" href="{{asset('frontend/img/logo/logo-3.png')}}">
         <style>
             .break-after-word {
                 white-space: pre-line; /* For breaking lines after spaces */
-                
+
             }
         </style>
-        
+
     </head>
     <body>
         <div class="page-wrapper">
@@ -50,7 +50,7 @@
             @extends('frontend.layouts.footer')
         </div>
         <!-- Back to Top -->
-        <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
+        <a href="#" class="btn btn-primary border-3 border-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
 
         <script>
             document.addEventListener("DOMContentLoaded", function() {

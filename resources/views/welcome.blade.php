@@ -95,6 +95,7 @@
                     <div class="row g-4">
                         <div class="col-lg-12">
                             <div class="row g-4">
+                                <a href="">
                                 <div class="col-6 col-lg-4 col-xl-3">
                                     <div class="rounded position-relative fruite-item border border-secondary">
                                         <div class="fruite-img bg-product">
@@ -119,6 +120,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                </a>
                                 <div class="col-6 col-lg-4 col-xl-3">
                                     <div class="rounded position-relative fruite-item border border-secondary">
                                         <div class="fruite-img bg-product">
@@ -708,7 +710,7 @@
                     </div>
                 </div>
             </div>
-        </div>      
+        </div>
     </div>
 </div>
 <!-- Fruits Shop End-->
