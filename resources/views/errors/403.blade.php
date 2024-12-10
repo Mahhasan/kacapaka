@@ -11,7 +11,7 @@
         <h1>403</h1>
         <h3>Forbidden</h3>
         <p>You don't have permission to access this resource.</p>
-        <a href="{{ url('/') }}" class="btn btn-primary">Go to Home</a>
+        <a href="{{ url('home') }}" class="btn btn-primary">Go to Home</a>
     </div>
 </body>
 </html>
