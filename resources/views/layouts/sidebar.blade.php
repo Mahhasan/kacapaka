@@ -15,7 +15,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('home') }}">
             <span class="menu-title">Dashboard</span>
             <i class="mdi mdi-home menu-icon"></i>
             </a>
@@ -33,8 +33,56 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" href="{{ route('categories.index') }}">
+            <span class="menu-title">Manage Categories</span>
+            <i class="mdi mdi-home menu-icon"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('sub-categories.index') }}">
+            <span class="menu-title">Manage Sub-Category</span>
+            <i class="mdi mdi-home menu-icon"></i>
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="{{ route('products.index') }}">
             <span class="menu-title">Manage Product</span>
+            <i class="mdi mdi-home menu-icon"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('orders.index') }}">
+            <span class="menu-title">Manage Orders</span>
+            <i class="mdi mdi-home menu-icon"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('offers.index') }}">
+            <span class="menu-title">Manage Offers</span>
+            <i class="mdi mdi-home menu-icon"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('expenses.index') }}">
+            <span class="menu-title">Manage Expenses</span>
+            <i class="mdi mdi-home menu-icon"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('tags.index') }}">
+            <span class="menu-title">Manage tags</span>
+            <i class="mdi mdi-home menu-icon"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('product-tags.index') }}">
+            <span class="menu-title">Manage product-tags</span>
+            <i class="mdi mdi-home menu-icon"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('sliders.index') }}">
+            <span class="menu-title">Manage sliders</span>
             <i class="mdi mdi-home menu-icon"></i>
             </a>
         </li>

@@ -25,11 +25,23 @@ class PermissionTableSeeder extends Seeder
            'user-list',
            'user-create',
            'user-edit',
-           'user-delete'
+           'user-delete',
+           'category-list',
+           'category-create',
+           'category-edit',
+           'category-delete',
+           'sub-category-list',
+           'sub-category-create',
+           'sub-category-edit',
+           'sub-category-delete'
         ];
 
+        // Use first time project
+        // foreach ($permissions as $permission) {
+        //      Permission::create(['name' => $permission]);
+        // }
         foreach ($permissions as $permission) {
-             Permission::create(['name' => $permission]);
+            Permission::findOrCreate($permission, 'web'); // This prevents duplicates (use in running project to add some role)
         }
     }
 }

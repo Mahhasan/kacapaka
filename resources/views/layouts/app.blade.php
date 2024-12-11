@@ -28,7 +28,7 @@
             <div class="container-fluid page-body-wrapper">
                 <!-- Sidebar -->
                 @include('layouts.Sidebar')
-                <div class="main-panel">
+                <div class="main-panel bg-body-tertiary">
                     <!-- Page Heading -->
                     @isset($header)
                         <header class="bg-white shadow">
@@ -39,7 +39,7 @@
                     @endisset
 
                     <!-- Page Content -->
-                    <main>
+                    <main class="">
                     @yield('content')
                     </main>
                     @include('layouts.footer')

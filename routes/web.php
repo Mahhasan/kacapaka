@@ -35,21 +35,29 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);
-    Route::resource('products', ProductController::class);
-});
-
-
-// Admin routes
-Route::middleware(['auth', 'role:admin|super_admin'])->group(function () {
-    // Route::resource('products', ProductController::class)->except(['create', 'edit', 'show']);
-    Route::resource('categories', CategoryController::class)->except(['create', 'edit', 'show']);
+    Route::resource('categories', CategoryController::class)->except(['show', 'create', 'edit']);
     Route::resource('sub-categories', SubCategoryController::class)->except(['create', 'edit', 'show']);
+    Route::resource('products', ProductController::class)->except(['create', 'edit', 'show']);
     Route::resource('orders', OrderController::class)->except(['create', 'edit', 'show']);
     Route::resource('sliders', SliderController::class)->except(['create', 'edit', 'show']);
     Route::resource('offers', OfferController::class)->except(['create', 'edit', 'show']);
     Route::resource('expenses', ExpenseController::class)->except(['create', 'edit', 'show']);
     Route::resource('tags', TagController::class)->except(['create', 'edit', 'show']);
     Route::resource('product-tags', ProductTagController::class)->except(['create', 'edit', 'show']);
+});
+
+
+
+// Admin routes
+Route::middleware(['auth', 'role:admin|super_admin'])->group(function () {
+    // Route::resource('products', ProductController::class)->except(['create', 'edit', 'show']);
+    // Route::resource('sub-categories', SubCategoryController::class)->except(['create', 'edit', 'show']);
+    // Route::resource('orders', OrderController::class)->except(['create', 'edit', 'show']);
+    // Route::resource('sliders', SliderController::class)->except(['create', 'edit', 'show']);
+    // Route::resource('offers', OfferController::class)->except(['create', 'edit', 'show']);
+    // Route::resource('expenses', ExpenseController::class)->except(['create', 'edit', 'show']);
+    // Route::resource('tags', TagController::class)->except(['create', 'edit', 'show']);
+    // Route::resource('product-tags', ProductTagController::class)->except(['create', 'edit', 'show']);
 });
 
 // User routes
