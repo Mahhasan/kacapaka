@@ -36,6 +36,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);
     Route::resource('categories', CategoryController::class)->except(['show', 'create', 'edit']);
+    Route::post('/categories/toggle-status/{id}', [CategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
+
+
     Route::resource('sub-categories', SubCategoryController::class)->except(['create', 'edit', 'show']);
     Route::resource('products', ProductController::class)->except(['create', 'edit', 'show']);
     Route::resource('orders', OrderController::class)->except(['create', 'edit', 'show']);

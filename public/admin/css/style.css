@@ -24077,7 +24077,7 @@ dl li {
   font-size: 0.875rem;
   line-height: 1;
   white-space: nowrap;
-  padding: 0.9375rem;
+  /* padding: 0.9375rem; */
 }
 .table th img,
 .table td img {

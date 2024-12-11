@@ -20,14 +20,14 @@ class CategoryController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'is_active' => 'required|boolean',
+            'is_active' => 'nullable|boolean',
         ]);
 
         Category::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->slug),
+            'slug' => Str::slug($request->name),
             'description' => $request->description,
-            'is_active' => $request->is_active,
+            'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
 
         return back()->with('success', 'Category created successfully.');
@@ -38,14 +38,14 @@ class CategoryController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'is_active' => 'required|boolean',
+            'is_active' => 'nullable|boolean',
         ]);
 
         $category->update([
             'name' => $request->name,
-            'slug' => Str::slug($request->slug),
+            'slug' => Str::slug($request->name),
             'description' => $request->description,
-            'is_active' => $request->is_active,
+            'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
 
         return back()->with('success', 'Category updated successfully.');
@@ -56,4 +56,13 @@ class CategoryController extends Controller
         $category->delete();
         return back()->with('success', 'Category deleted successfully.');
     }
+
+    public function toggleStatus(Request $request, $id)
+{
+    $category = Category::findOrFail($id);
+    $category->update(['is_active' => $request->is_active]);
+
+    return response()->json(['success' => true, 'message' => 'Status updated successfully']);
+}
+    
 }
