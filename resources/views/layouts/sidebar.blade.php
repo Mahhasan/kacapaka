@@ -39,7 +39,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('sub-categories.index') }}">
+            <a class="nav-link" href="{{ route('subcategories.index') }}">
             <span class="menu-title">Manage Sub-Category</span>
             <i class="mdi mdi-home menu-icon"></i>
             </a>

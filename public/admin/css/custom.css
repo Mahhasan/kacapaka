@@ -1,0 +1,37 @@
+/* Form */
+@media (max-width: 575.98px) {
+    .col-form-label {
+        padding-top: 0px;
+        padding-bottom: .5rem
+    }
+    .form-group {
+        margin-bottom: .75rem;
+    }
+}
+.form-check {
+    margin-top: 0px;
+}
+.table .form-check {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    /* padding-left: 2.5rem; */
+    margin-bottom: 0px;
+}
+.table .switch .form-check {
+    padding-left: 2.5rem !important;
+}
+/* Table */
+.table {
+    --bs-table-hover-bg: #f0f8ff;
+  }
+/* Color */
+.bg-aliceblue {
+    background-color: #f0f8ff !important;
+}
+.section-wrapper {
+    /* background: #f2edf3; */
+    padding: 2.75rem 2.25rem;
+    width: 100%;
+    -webkit-flex-grow: 1;
+    flex-grow: 1;
+}

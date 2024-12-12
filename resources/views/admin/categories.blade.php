@@ -1,9 +1,10 @@
-<!-- resources/views/categories/index.blade.php -->
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-4">
-    <h1>Categories</h1>
+<div name="header" class="section-wrapper">
+    <div class="page-header">
+        <h2 class="display-4">Manage Categories</h2>
+    </div>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -12,18 +13,27 @@
     <!-- Add Category -->
     <div class="card mb-4">
         <div class="card-header">
-            <button class="btn btn-primary" onclick="toggleSection('create-category')">+ Add Category</button>
+            <button class="btn btn-gradient-primary" type="button" onclick="toggleSection('create-category')">+ New Category</button>
         </div>
         <div id="create-category" class="card-body d-none">
             <form action="{{ route('categories.store') }}" method="POST">
                 @csrf
-                <div class="form-group mb-3">
-                    <label for="name">Name</label>
-                    <input type="text" name="name" id="name" class="form-control" required>
+                <div class="row">
+                    <label for="name" class="col-sm-3 col-lg-2 col-form-label">Name</label>
+                    <div class="form-group col-sm-9 col-lg-10">
+                        <input type="text" class="form-control form-control-sm" name="name" id="name" placeholder="Category Name" required>
+                        @error('name')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
                 </div>
-                <div class="form-group mb-3">
-                    <label for="description">Description</label>
-                    <textarea name="description" id="description" class="form-control"></textarea>
+                <div class="row">
+                    <label for="description" class="col-sm-3 col-lg-2 col-form-label">Description</label>
+                    <div class="form-group col-sm-9 col-lg-10">
+                        <textarea type="text" class="form-control" name="description" id="description" placeholder="Category Description"></textarea>
+                    </div>
                 </div>
                 <div class="form-check mb-3">
                     <label class="form-check-label" for="is_active">
@@ -32,7 +42,7 @@
                     </label>
                 </div>
                 <button type="submit" class="btn btn-sm btn-outline-primary btn-icon-text"><i class="mdi mdi-file-check btn-icon-prepend"></i>Save</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleSection('create-category')"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleSection('create-category')"><i class="fa-solid fa-xmark"></i> Cancel</button>
             </form>
         </div>
     </div>
@@ -55,17 +65,17 @@
                             <tr>
                                 <td>{{ $category->name }}</td>
                                 <td>{{ $category->description }}</td>
-                                <td>
-                                    <div class="form-check form-switch" style="padding-left: 2.5em;">
-                                        <input 
-                                            class="form-check-input toggle-status" 
-                                            type="checkbox" 
-                                            id="toggle-status-{{ $category->id }}" 
-                                            data-id="{{ $category->id }}" 
+                                <td class="switch">
+                                    <div class="form-check form-switch">
+                                        <input
+                                            class="form-check-input toggle-status"
+                                            type="checkbox"
+                                            id="toggle-status-{{ $category->id }}"
+                                            data-id="{{ $category->id }}"
                                             {{ $category->is_active ? 'checked' : '' }}>
-                                        <label 
-                                            class="form-check-label" 
-                                            for="toggle-status-{{ $category->id }}" style="margin-left: 0rem;">
+                                        <label
+                                            class="form-check-label"
+                                            for="toggle-status-{{ $category->id }}">
                                             <span class="text-{{ $category->is_active ? 'info' : 'danger' }}">
                                                 {{ $category->is_active ? 'Active' : 'Inactive' }}
                                             </span>
@@ -82,33 +92,46 @@
                                 </td>
                             </tr>
                             <tr id="edit-category-{{ $category->id }}" class="d-none">
-                                <td colspan="5" class="bg-light">
-                                    <form action="{{ route('categories.update', $category->id) }}" method="POST">
-                                        @csrf
-                                        @method('PUT')
-                                        <div class="form-group mb-3">
-                                            <label for="name">Name</label>
-                                            <input type="text" name="name" id="name" class="form-control" value="{{ $category->name }}" required>
+                                <td colspan="5" class="bg-aliceblue">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <form action="{{ route('categories.update', $category->id) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="row">
+                                                    <label for="name" class="col-sm-3 col-lg-2 col-form-label">Name</label>
+                                                    <div class="form-group col-sm-9 col-lg-10">
+                                                        <input type="text" class="form-control form-control-sm" name="name" id="name" value="{{ $category->name }}" required>
+                                                        @error('name')
+                                                            <div class="invalid-feedback">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <label for="description" class="col-sm-3 col-lg-2 col-form-label">Description</label>
+                                                    <div class="form-group col-sm-9 col-lg-10">
+                                                        <textarea type="text" class="form-control" name="description" id="description">{{ $category->description }}</textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-check mb-3">
+                                                    <label class="form-check-label" for="is_active-{{ $category->id }}">
+                                                        <input type="checkbox" name="is_active" id="is_active-{{ $category->id }}" class="form-check-input" value="1" {{ $category->is_active ? 'checked' : '' }}>
+                                                        Active
+                                                    </label>
+                                                </div>
+                                                <button type="submit" class="btn btn-sm btn-outline-success"><i class="mdi mdi-file-check btn-icon-prepend"></i> Update</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleSection('edit-category-{{ $category->id }}')"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                                            </form>
                                         </div>
-                                        <div class="form-group mb-3">
-                                            <label for="description">Description</label>
-                                            <textarea name="description" id="description" class="form-control">{{ $category->description }}</textarea>
-                                        </div>
-                                        <div class="form-check mb-3">
-                                            <label class="form-check-label" for="is_active-{{ $category->id }}">
-                                                <input type="checkbox" name="is_active" id="is_active-{{ $category->id }}" class="form-check-input" value="1" {{ $category->is_active ? 'checked' : '' }}>
-                                                Active
-                                            </label>
-                                        </div>
-                                        <button type="submit" class="btn btn-sm btn-outline-success btn-icon-text"><i class="mdi mdi-file-check btn-icon-prepend"></i> Update</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleSection('edit-category-{{ $category->id }}')"><i class="fa-solid fa-xmark"></i> Cancel</button>
-                                    </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="5" class="text-center">No categories available.</td>
-                            </tr>
+                        <tr>
+                            <td colspan="5" class="text-center">No categories available.</td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>

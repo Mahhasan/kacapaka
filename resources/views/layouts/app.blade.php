@@ -7,17 +7,17 @@
 
         <title>{{ config('app.name', 'কাঁচাপাকা') }}</title>
 
-
         <!-- Scripts -->
         <link rel="stylesheet" href="{{asset('admin/vendors/mdi/css/materialdesignicons.min.css')}}">
         <link rel="stylesheet" href="{{asset('admin/vendors/ti-icons/css/themify-icons.css')}}">
         <link rel="stylesheet" href="{{asset('admin/vendors/css/vendor.bundle.base.css')}}">
         <!-- Plugin css for this page -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" rel="stylesheet">
-        <!-- <link rel="stylesheet" href="{{asset('admin/vendors/font-awesome/css/font-awesome.min.css')}}" /> -->
+        <link rel="stylesheet" href="{{asset('admin/vendors/font-awesome/css/font-awesome.min.css')}}" />
         <link rel="stylesheet" href="{{asset('admin/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css')}}">
         <!-- Layout styles -->
         <link rel="stylesheet" href="{{asset('admin/css/style.css')}}">
+        <link rel="stylesheet" href="{{asset('admin/css/custom.css')}}">
         <!-- Favicon -->
         <link rel="icon" sizes="24x24" href="{{asset('frontend/img/logo/logo-3.png')}}">
     </head>

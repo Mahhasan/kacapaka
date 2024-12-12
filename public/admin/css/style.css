@@ -10433,8 +10433,8 @@ progress {
 }
 
 .col-form-label {
-  padding-top: calc(0.94rem + var(--bs-border-width));
-  padding-bottom: calc(0.94rem + var(--bs-border-width));
+  padding-top: calc(0.75rem + var(--bs-border-width));
+  padding-bottom: calc(0.75rem + var(--bs-border-width));
   margin-bottom: 0;
   font-size: inherit;
   line-height: 1;
@@ -10472,7 +10472,7 @@ progress {
   background-color: #ffffff;
   background-clip: padding-box;
   border: var(--bs-border-width) solid var(--bs-border-color);
-  border-radius: 2px;
+  border-radius: 5px;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -12849,7 +12849,7 @@ textarea.is-invalid.tt-hint, .select2-container--default .select2-selection--sin
 }
 
 .card-header {
-  padding: var(--bs-card-cap-padding-y) var(--bs-card-cap-padding-x);
+  /* padding: var(--bs-card-cap-padding-y) var(--bs-card-cap-padding-x); */
   margin-bottom: 0;
   color: var(--bs-card-cap-color);
   background-color: var(--bs-card-cap-bg);
@@ -24077,7 +24077,7 @@ dl li {
   font-size: 0.875rem;
   line-height: 1;
   white-space: nowrap;
-  /* padding: 0.9375rem; */
+  padding: 0.9375rem;
 }
 .table th img,
 .table td img {

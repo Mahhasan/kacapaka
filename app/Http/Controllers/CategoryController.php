@@ -1,6 +1,5 @@
 <?php
 
-// app/Http/Controllers/CategoryController.php
 namespace App\Http\Controllers;
 
 use App\Models\Category;
@@ -58,11 +57,10 @@ class CategoryController extends Controller
     }
 
     public function toggleStatus(Request $request, $id)
-{
-    $category = Category::findOrFail($id);
-    $category->update(['is_active' => $request->is_active]);
+    {
+        $category = Category::findOrFail($id);
+        $category->update(['is_active' => $request->is_active]);
 
-    return response()->json(['success' => true, 'message' => 'Status updated successfully']);
-}
-    
+        return response()->json(['success' => true, 'message' => 'Status updated successfully']);
+    }
 }
