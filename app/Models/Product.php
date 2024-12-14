@@ -13,15 +13,17 @@ class Product extends Model
         'category_id',
         'subcategory_id',
         'name',
+        'slug',
         'description',
         'price',
         'discount_price',
         'stock',
-        'image',
-        'is_active',
+        'promotion_start_time',
+        'promotion_end_time',
         'position',
+        'is_active',
         'has_free_delivery',
-        'delivery_charge',
+        'image',
         'created_by'
     ];
 

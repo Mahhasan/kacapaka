@@ -1,72 +1,105 @@
 <?php
 
-// app/Http/Controllers/ProductController.php
 namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Subcategory;
+use App\Models\SubCategory;
+use App\Models\Tag;
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
+
 class ProductController extends Controller
 {
-    function __construct()
-    {
-         $this->middleware('permission:product-list|product-create|product-edit|product-delete', ['only' => ['index','store']]);
-         $this->middleware('permission:product-create', ['only' => ['store']]);
-         $this->middleware('permission:product-edit', ['only' => ['update']]);
-         $this->middleware('permission:product-delete', ['only' => ['destroy']]);
-    }
-
     public function index()
     {
-        $products = Product::with(['category', 'subcategory'])->get();
+        $products = Product::with(['category', 'subcategory', 'tags'])->get();
         $categories = Category::all();
-        $subcategories = Subcategory::all();
-        return view('products.index', compact('products', 'categories', 'subcategories'));
+        $subcategories = SubCategory::all();
+        $tags = Tag::all();
+
+        return view('admin.products', compact('products', 'categories', 'subcategories', 'tags'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            // 'category_id' => 'required|exists:categories,id',
-            // 'subcategory_id' => 'required|exists:subcategories,id',
-            'name' => 'required',
-            // 'description' => 'nullable',
-            // 'price' => 'required|numeric',
-            // 'discount_price' => 'nullable|numeric',
-            // 'stock' => 'required|integer',
-            // 'image' => 'required|string',
-            // 'is_active' => 'required|boolean',
-            // 'position' => 'required|integer',
-            // 'has_free_delivery' => 'required|boolean',
-            // 'delivery_charge' => 'nullable|numeric',
-            // 'created_by' => 'required|exists:users,id',
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:sub_categories,id',
+            'price' => 'required|numeric|min:0',
+            'discount_price' => 'nullable|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'promotion_start_time' => 'nullable|date',
+            'promotion_end_time' => 'nullable|date|after_or_equal:promotion_start_time',
+            'position' => 'nullable|integer|min:0',
+            'delivery_free' => 'nullable|boolean',
+            'tags' => 'nullable|array', // Tags array
+            'tags.*' => 'exists:tags,id',
+            'image' => 'nullable|image|max:2048', // Max 2MB
         ]);
 
-        Product::create($request->all());
+        $product = Product::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id,
+            'price' => $request->price,
+            'discount_price' => $request->discount_price,
+            'stock' => $request->stock,
+            'promotion_start_time' => $request->promotion_start_time,
+            'promotion_end_time' => $request->promotion_end_time,
+            'position' => $request->position,
+            'delivery_free' => $request->has('delivery_free') ? 1 : 0,
+            'image' => $request->file('image') ? $request->file('image')->store('products', 'public') : null,
+        ]);
+
+        if ($request->tags) {
+            $product->tags()->attach($request->tags);
+        }
+
         return back()->with('success', 'Product created successfully.');
     }
 
     public function update(Request $request, Product $product)
     {
         $request->validate([
+            'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'subcategory_id' => 'required|exists:subcategories,id',
-            'name' => 'required',
-            'description' => 'nullable',
-            'price' => 'required|numeric',
-            'discount_price' => 'nullable|numeric',
-            'stock' => 'required|integer',
-            'image' => 'required|string',
-            'is_active' => 'required|boolean',
-            'position' => 'required|integer',
-            'has_free_delivery' => 'required|boolean',
-            'delivery_charge' => 'nullable|numeric',
-            'created_by' => 'required|exists:users,id',
+            'subcategory_id' => 'nullable|exists:sub_categories,id',
+            'price' => 'required|numeric|min:0',
+            'discount_price' => 'nullable|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'promotion_start_time' => 'nullable|date',
+            'promotion_end_time' => 'nullable|date|after_or_equal:promotion_start_time',
+            'position' => 'nullable|integer|min:0',
+            'delivery_free' => 'nullable|boolean',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
+            'image' => 'nullable|image|max:2048',
         ]);
 
-        $product->update($request->all());
+        $product->update([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+            'subcategory_id' => $request->subcategory_id,
+            'price' => $request->price,
+            'discount_price' => $request->discount_price,
+            'stock' => $request->stock,
+            'promotion_start_time' => $request->promotion_start_time,
+            'promotion_end_time' => $request->promotion_end_time,
+            'position' => $request->position,
+            'delivery_free' => $request->has('delivery_free') ? 1 : 0,
+            'image' => $request->file('image') ? $request->file('image')->store('products', 'public') : $product->image,
+        ]);
+
+        if ($request->tags) {
+            $product->tags()->sync($request->tags);
+        }
+
         return back()->with('success', 'Product updated successfully.');
     }
 

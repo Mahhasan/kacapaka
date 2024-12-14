@@ -20,6 +20,9 @@
 .table .switch .form-check {
     padding-left: 2.5rem !important;
 }
+.table .switch .form-check-label {
+    margin-left: .25rem;
+}
 /* Table */
 .table {
     --bs-table-hover-bg: #f0f8ff;
@@ -34,4 +37,13 @@
     width: 100%;
     -webkit-flex-grow: 1;
     flex-grow: 1;
+}
+.badge-kacapaka-warning {
+    color: #606060;
+    border: 1px solid #fed713;
+    background: #fed713;
+}
+.form-check-input:checked {
+    background-color: #b66dff;
+    border-color: #b66dff;
 }
