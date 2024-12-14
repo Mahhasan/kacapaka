@@ -77,7 +77,7 @@
                                             <label
                                                 class="form-check-label"
                                                 for="toggle-status-{{ $category->id }}">
-                                                <span class="text-{{ $category->is_active ? 'info' : 'danger' }}">
+                                                <span class="text-{{ $category->is_active ? 'primary' : 'danger' }}">
                                                     {{ $category->is_active ? 'Active' : 'Inactive' }}
                                                 </span>
                                             </label>
