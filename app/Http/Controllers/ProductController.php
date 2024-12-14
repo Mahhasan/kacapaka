@@ -33,7 +33,8 @@ class ProductController extends Controller
             'promotion_start_time' => 'nullable|date',
             'promotion_end_time' => 'nullable|date|after_or_equal:promotion_start_time',
             'position' => 'nullable|integer|min:0',
-            'delivery_free' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
+            'has_delivery_free' => 'nullable|boolean',
             'tags' => 'nullable|array', // Tags array
             'tags.*' => 'exists:tags,id',
             'image' => 'nullable|image|max:2048', // Max 2MB
@@ -51,7 +52,8 @@ class ProductController extends Controller
             'promotion_start_time' => $request->promotion_start_time,
             'promotion_end_time' => $request->promotion_end_time,
             'position' => $request->position,
-            'delivery_free' => $request->has('delivery_free') ? 1 : 0,
+            'is_active' => $request->has('is_active') ? 1 : 0,
+            'has_delivery_free' => $request->has('delivery_free') ? 1 : 0,
             'image' => $request->file('image') ? $request->file('image')->store('products', 'public') : null,
         ]);
 
@@ -92,7 +94,8 @@ class ProductController extends Controller
             'promotion_start_time' => $request->promotion_start_time,
             'promotion_end_time' => $request->promotion_end_time,
             'position' => $request->position,
-            'delivery_free' => $request->has('delivery_free') ? 1 : 0,
+            'is_active' => $request->has('is_active') ? 1 : 0,
+            'has_delivery_free' => $request->has('delivery_free') ? 1 : 0,
             'image' => $request->file('image') ? $request->file('image')->store('products', 'public') : $product->image,
         ]);
 
