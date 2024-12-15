@@ -92,7 +92,7 @@
                 <div class="row">
                     <label for="tags" class="col-sm-3 col-lg-2 col-form-label">Tags</label>
                     <div class="form-group col-sm-9 col-lg-10">
-                        <select class="form-control" name="tags[]" id="tags" multiple>
+                        <select class="js-example-basic-multiple" multiple="multiple" style="width:100%" name="tags[]">
                             @foreach($tags as $tag)
                                 <option value="{{ $tag->id }}">{{ $tag->name }}</option>
                             @endforeach
@@ -117,7 +117,7 @@
                         Active
                     </label>
                 </div>
-                <button type="submit" class="btn btn-sm btn-outline-primary btn-icon-text"><i class="mdi mdi-file-check btn-icon-prepend"></i>Save</button>
+                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="mdi mdi-file-check btn-icon-prepend"></i>Save</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleSection('create-product')"><i class="fa-solid fa-xmark"></i> Cancel</button>
             </form>
         </div>
@@ -257,11 +257,11 @@
                                     <input type="number" class="form-control" id="position-{{ $product->id }}" name="position" value="{{ $product->position }}">
                                 </div>
                             </div>
-                            <div class="row mb-2">
-                                <label class="col-sm-2 col-form-label">Delivery Free</label>
-                                <div class="col-sm-10">
+                            <div class="form-check mb-2">
+                                <label class="form-check-label" for="has_delivery_free-{{ $product->id }}">
                                     <input type="checkbox" name="has_delivery_free" id="has_delivery_free-{{ $product->id }}" class="form-check-input"  value="1" {{ $product->has_delivery_free ? 'checked' : '' }}>
-                                </div>
+                                    Delivery Free
+                                </label>
                             </div>
                             <div class="form-check mb-3">
                                 <label class="form-check-label" for="is_active-{{ $product->id }}">
@@ -269,12 +269,8 @@
                                     Active
                                 </label>
                             </div>
-                            <div class="row">
-                                <div class="col-sm-10 offset-sm-2">
-                                    <button type="submit" class="btn btn-success">Update</button>
-                                    <button type="button" class="btn btn-secondary" onclick="toggleSection('edit-product-{{ $product->id }}')">Cancel</button>
-                                </div>
-                            </div>
+                                <button type="submit" class="btn btn-sm btn-outline-success"><i class="mdi mdi-file-check btn-icon-prepend"></i> Update</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleSection('edit-product-{{ $product->id }}')"><i class="fa-solid fa-xmark"></i> Cancel</button>
                         </form>
                     </td>
                 </tr>
