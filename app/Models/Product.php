@@ -22,9 +22,13 @@ class Product extends Model
         'promotion_end_time',
         'position',
         'is_active',
-        'has_free_delivery',
+        'has_delivery_free',
         'image',
         'created_by'
+    ];
+    protected $casts = [
+        'promotion_start_time' => 'datetime',
+        'promotion_end_time' => 'datetime',
     ];
 
     public function category()
@@ -32,10 +36,10 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function subcategory()
-    {
-        return $this->belongsTo(Subcategory::class);
-    }
+    public function subCategory()
+{
+    return $this->belongsTo(SubCategory::class, 'subcategory_id');
+}
 
     public function tags()
     {

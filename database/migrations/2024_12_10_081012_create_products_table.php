@@ -25,7 +25,7 @@ return new class extends Migration
             $table->dateTime('promotion_end_time')->nullable();
             $table->unsignedInteger('position')->default(0); // Position for ordering
             $table->boolean('is_active')->default(true);
-            $table->boolean('has_delivery_free')->default(false); // Free delivery flag
+            $table->boolean('has_delivery_free')->default(true); // Free delivery flag
             $table->string('image')->nullable(); // Main image
             $table->foreignId('created_by')->constrained('users'); // Admin who created it
             $table->timestamps();

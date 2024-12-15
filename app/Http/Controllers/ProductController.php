@@ -26,7 +26,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'subcategory_id' => 'nullable|exists:sub_categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
             'price' => 'required|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
@@ -38,6 +38,7 @@ class ProductController extends Controller
             'tags' => 'nullable|array', // Tags array
             'tags.*' => 'exists:tags,id',
             'image' => 'nullable|image|max:2048', // Max 2MB
+            'created_by' => 'required|exists:users,id',
         ]);
 
         $product = Product::create([
@@ -53,8 +54,9 @@ class ProductController extends Controller
             'promotion_end_time' => $request->promotion_end_time,
             'position' => $request->position,
             'is_active' => $request->has('is_active') ? 1 : 0,
-            'has_delivery_free' => $request->has('delivery_free') ? 1 : 0,
+            'has_delivery_free' => $request->has('has_delivery_free') ? 1 : 0,
             'image' => $request->file('image') ? $request->file('image')->store('products', 'public') : null,
+            'created_by' => $request->created_by,
         ]);
 
         if ($request->tags) {
@@ -69,17 +71,19 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'subcategory_id' => 'nullable|exists:sub_categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
             'price' => 'required|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'promotion_start_time' => 'nullable|date',
             'promotion_end_time' => 'nullable|date|after_or_equal:promotion_start_time',
             'position' => 'nullable|integer|min:0',
-            'delivery_free' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
+            'has_delivery_free' => 'nullable|boolean',
             'tags' => 'nullable|array',
             'tags.*' => 'exists:tags,id',
             'image' => 'nullable|image|max:2048',
+            'created_by' => 'required|exists:users,id',
         ]);
 
         $product->update([
@@ -95,8 +99,9 @@ class ProductController extends Controller
             'promotion_end_time' => $request->promotion_end_time,
             'position' => $request->position,
             'is_active' => $request->has('is_active') ? 1 : 0,
-            'has_delivery_free' => $request->has('delivery_free') ? 1 : 0,
+            'has_delivery_free' => $request->has('has_delivery_free') ? 1 : 0,
             'image' => $request->file('image') ? $request->file('image')->store('products', 'public') : $product->image,
+            'created_by' => $request->created_by,
         ]);
 
         if ($request->tags) {
@@ -110,5 +115,13 @@ class ProductController extends Controller
     {
         $product->delete();
         return back()->with('success', 'Product deleted successfully.');
+    }
+
+    public function getSubcategories($categoryId)
+    {
+        // Fetch the subcategories based on the category_id
+        $subcategories = SubCategory::where('category_id', $categoryId)->get();
+
+        return response()->json($subcategories);
     }
 }

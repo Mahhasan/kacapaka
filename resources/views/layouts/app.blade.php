@@ -15,9 +15,12 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" rel="stylesheet">
         <link rel="stylesheet" href="{{asset('admin/vendors/font-awesome/css/font-awesome.min.css')}}" />
         <link rel="stylesheet" href="{{asset('admin/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css')}}">
+
         <!-- Layout styles -->
         <link rel="stylesheet" href="{{asset('admin/css/style.css')}}">
         <link rel="stylesheet" href="{{asset('admin/css/custom.css')}}">
+
+        <script src="{{ asset('admin/js/tinymce/tinymce.min.js') }}"></script>
         <!-- Favicon -->
         <link rel="icon" sizes="24x24" href="{{asset('frontend/img/logo/logo-3.png')}}">
     </head>
@@ -65,6 +68,7 @@
                 </div>
             </div>
         </div>
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
         <!-- plugins:js -->
         <script src="{{asset('admin/vendors/js/vendor.bundle.base.js')}}"></script>
         <!-- Plugin js for this page -->

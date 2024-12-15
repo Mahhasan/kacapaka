@@ -40,11 +40,15 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('subcategories', SubCategoryController::class)->except(['create', 'edit', 'show']);
     Route::post('/subcategories/toggle-status/{id}', [SubCategoryController::class, 'toggleStatus'])->name('subcategories.toggle-status');
     Route::resource('products', ProductController::class)->except(['create', 'edit', 'show']);
+    Route::post('/products/toggle-status/{id}', [ProductController::class, 'toggleStatus'])->name('products.toggle-status');
+    Route::get('/get-subcategories/{categoryId}', [ProductController::class, 'getSubcategories']);
+
     Route::resource('orders', OrderController::class)->except(['create', 'edit', 'show']);
     Route::resource('sliders', SliderController::class)->except(['create', 'edit', 'show']);
     Route::resource('offers', OfferController::class)->except(['create', 'edit', 'show']);
     Route::resource('expenses', ExpenseController::class)->except(['create', 'edit', 'show']);
     Route::resource('tags', TagController::class)->except(['create', 'edit', 'show']);
+    Route::post('/tags/toggle-status/{id}', [TagController::class, 'toggleStatus'])->name('tags.toggle-status');
     Route::resource('product-tags', ProductTagController::class)->except(['create', 'edit', 'show']);
 });
 
