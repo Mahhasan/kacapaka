@@ -41,7 +41,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/subcategories/toggle-status/{id}', [SubCategoryController::class, 'toggleStatus'])->name('subcategories.toggle-status');
     Route::resource('products', ProductController::class)->except(['create', 'edit', 'show']);
     Route::post('/products/toggle-status/{id}', [ProductController::class, 'toggleStatus'])->name('products.toggle-status');
-    Route::get('/get-subcategories/{categoryId}', [ProductController::class, 'getSubcategories']);
+// Route to fetch subcategories
+Route::get('/get-subcategories/{categoryId}', [ProductController::class, 'getSubcategories']);
 
     Route::resource('orders', OrderController::class)->except(['create', 'edit', 'show']);
     Route::resource('sliders', SliderController::class)->except(['create', 'edit', 'show']);

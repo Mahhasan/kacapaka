@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Discount;
 use App\Models\Category;
 use App\Models\SubCategory;
 use App\Models\Tag;
@@ -48,10 +49,7 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
             'subcategory_id' => $request->subcategory_id,
             'price' => $request->price,
-            'discount_price' => $request->discount_price,
             'stock' => $request->stock,
-            'promotion_start_time' => $request->promotion_start_time,
-            'promotion_end_time' => $request->promotion_end_time,
             'position' => $request->position,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'has_delivery_free' => $request->has('has_delivery_free') ? 1 : 0,
@@ -61,6 +59,16 @@ class ProductController extends Controller
 
         if ($request->tags) {
             $product->tags()->attach($request->tags);
+        }
+
+        // If a discount price is provided, store it in the discounts table
+        if ($request->discount_price) {
+            Discount::create([
+                'product_id' => $product->id,
+                'discount_price' => $request->discount_price,
+                'promotion_start_time' => $request->promotion_start_time,
+                'promotion_end_time' => $request->promotion_end_time,
+            ]);
         }
 
         return back()->with('success', 'Product created successfully.');
@@ -93,10 +101,7 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
             'subcategory_id' => $request->subcategory_id,
             'price' => $request->price,
-            'discount_price' => $request->discount_price,
             'stock' => $request->stock,
-            'promotion_start_time' => $request->promotion_start_time,
-            'promotion_end_time' => $request->promotion_end_time,
             'position' => $request->position,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'has_delivery_free' => $request->has('has_delivery_free') ? 1 : 0,
@@ -108,6 +113,21 @@ class ProductController extends Controller
             $product->tags()->sync($request->tags);
         }
 
+        // Update or create the discount
+        if ($request->discount_price) {
+            Discount::updateOrCreate(
+                ['product_id' => $product->id], // Search for an existing discount for the product
+                [
+                    'discount_price' => $request->discount_price,
+                    'promotion_start_time' => $request->promotion_start_time,
+                    'promotion_end_time' => $request->promotion_end_time,
+                ]
+            );
+        } else {
+            // If no discount price is provided, delete the existing discount record
+            Discount::where('product_id', $product->id)->delete();
+        }
+
         return back()->with('success', 'Product updated successfully.');
     }
 
@@ -117,11 +137,13 @@ class ProductController extends Controller
         return back()->with('success', 'Product deleted successfully.');
     }
 
-    public function getSubcategories($categoryId)
-    {
-        // Fetch the subcategories based on the category_id
-        $subcategories = SubCategory::where('category_id', $categoryId)->get();
+   // In your ProductController
+public function getSubcategories($categoryId)
+{
+    // Fetch subcategories based on the category ID
+    $subcategories = SubCategory::where('category_id', $categoryId)->get();
 
-        return response()->json($subcategories);
-    }
+    // Return as JSON response
+    return response()->json($subcategories);
+}
 }

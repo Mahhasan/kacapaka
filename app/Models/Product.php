@@ -16,10 +16,7 @@ class Product extends Model
         'slug',
         'description',
         'price',
-        'discount_price',
         'stock',
-        'promotion_start_time',
-        'promotion_end_time',
         'position',
         'is_active',
         'has_delivery_free',
@@ -53,5 +50,15 @@ class Product extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+    public function discounts()
+    {
+        return $this->hasMany(Discount::class);
+    }
+    public function activeDiscount()
+    {
+        return $this->hasOne(Discount::class)
+                    ->where('promotion_start_time', '<=', now())
+                    ->where('promotion_end_time', '>=', now());
     }
 }

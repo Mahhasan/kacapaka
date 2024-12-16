@@ -19,10 +19,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->foreignId('subcategory_id')->nullable()->constrained('subcategories')->onDelete('cascade');
             $table->decimal('price', 10, 2);
-            $table->decimal('discount_price', 10, 2)->nullable();
             $table->unsignedInteger('stock')->default(0);
-            $table->dateTime('promotion_start_time')->nullable();
-            $table->dateTime('promotion_end_time')->nullable();
             $table->unsignedInteger('position')->default(0); // Position for ordering
             $table->boolean('is_active')->default(true);
             $table->boolean('has_delivery_free')->default(true); // Free delivery flag
