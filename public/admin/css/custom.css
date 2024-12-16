@@ -47,3 +47,9 @@
     background-color: #b66dff;
     border-color: #b66dff;
 }
+.border-10{
+    border-width: 10px !important;
+}
+.border-20{
+    border-width: 20px !important;
+}

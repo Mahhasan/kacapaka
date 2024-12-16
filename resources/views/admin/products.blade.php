@@ -29,8 +29,8 @@ body {
 
     .box {
   display: block;
-  min-width: 300px;
-  height: 300px;
+  min-width: 100px;
+  height: 100px;
   margin: 10px;
   background-color: white;
   border-radius: 5px;
@@ -161,124 +161,143 @@ i.material-icons {
         <div class="card-header">
             <button class="btn btn-gradient-primary" type="button" onclick="toggleSection('create-product')">+ New Product</button>
         </div>
-        <div id="create-product" class="card-body d-none">
+        <div id="create-product" class="d-none">
             <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="created_by" value="{{ auth()->id() }}">
-                <div class="row">
-                    <label for="name" class="col-sm-3 col-lg-2 col-form-label">Product Name</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <input type="text" class="form-control form-control-sm" name="name" id="name" placeholder="Product Name" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="category_id" class="col-sm-3 col-lg-2 col-form-label">Category</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <select class="form-control" name="category_id" id="category" required>
-                            <option value="">Select Category</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <label for="subcategory" class="col-sm-3 col-lg-2 col-form-label">Subcategory</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <select class="form-control" name="subcategory_id" id="subcategory">
-                            <option value=""></option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="description" class="col-sm-3 col-lg-2 col-form-label">Description</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <textarea class="form-control" name="description" id="description" placeholder=""></textarea>
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="price" class="col-sm-3 col-lg-2 col-form-label">Price</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <input type="number" class="form-control" name="price" id="price" step="0.01" placeholder="Product Price" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="discount_price" class="col-sm-3 col-lg-2 col-form-label">Discount Price</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <input type="number" class="form-control" name="discount_price" id="discount_price" step="0.01" placeholder="Discount Price">
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="promotion_start_time" class="col-sm-3 col-lg-2 col-form-label">Promotion Start</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <input type="datetime-local" class="form-control" name="promotion_start_time" id="promotion_start_time">
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="promotion_end_time" class="col-sm-3 col-lg-2 col-form-label">Promotion End</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <input type="datetime-local" class="form-control" name="promotion_end_time" id="promotion_end_time">
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="stock" class="col-sm-3 col-lg-2 col-form-label">Stock</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <input type="number" class="form-control" name="stock" id="stock" placeholder="Stock Quantity" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="position" class="col-sm-3 col-lg-2 col-form-label">Position</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <input type="number" class="form-control" name="position" id="position" placeholder="Position for Product View">
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="tags" class="col-sm-3 col-lg-2 col-form-label">Tags</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <select class="js-example-basic-multiple" multiple="multiple" style="width:100%" name="tags[]">
-                            @foreach($tags as $tag)
-                                <option value="{{ $tag->id }}">{{ $tag->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="image" class="col-sm-3 col-lg-2 col-form-label">Image</label>
-                    <div class="form-group col-sm-9 col-lg-10">
-                        <input type="file" class="form-control" name="image" id="image">
-                    </div>
-                </div>
-
-
-                <div class="wrapper">
-                    <div class="box">
-                        <div class="js--image-preview"></div>
-                        <div class="upload-options">
-                        <label>
-                            <input type="file" class="image-upload" accept="image/*" />
-                        </label>
+                <div class="border border-light border-start-0 border-end-0 border-10 rounded-5">
+                    <div class="card-body">
+                        <div class="row">
+                            <label for="name" class="col-sm-3 col-lg-2 col-form-label">Product Name</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <input type="text" class="form-control form-control-sm" name="name" id="name" placeholder="Product Name" required>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="box">
-                        <div class="js--image-preview"></div>
-                        <div class="upload-options">
-                        <label>
-                            <input type="file" class="image-upload" accept="image/*" />
-                        </label>
+                        <div class="row">
+                            <label for="category_id" class="col-sm-3 col-lg-2 col-form-label">Category</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <select class="form-control" name="category_id" id="category" required>
+                                    <option value="">Select Category</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="box">
-                        <div class="js--image-preview"></div>
-                        <div class="upload-options">
-                        <label>
-                            <input type="file" class="image-upload" accept="image/*" />
-                        </label>
+                        <div class="row">
+                            <label for="subcategory" class="col-sm-3 col-lg-2 col-form-label">Subcategory</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <select class="form-control" name="subcategory_id" id="subcategory">
+                                    <option value=""></option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="border border-light border-start-0 border-end-0 border-10 rounded-5">
+                    <div class="card-body">
+                        <div class="row">
+                            <label for="description" class="col-sm-3 col-lg-2 col-form-label">Description</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <textarea class="form-control" name="description" id="description" placeholder=""></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="border border-light border-start-0 border-end-0 border-10 rounded-5">
+                    <div class="card-body rounded-5">
+                        <div class="row">
+                            <label for="price" class="col-sm-3 col-lg-2 col-form-label">Price</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <input type="number" class="form-control" name="price" id="price" step="0.01" placeholder="Product Price" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="discount_price" class="col-sm-3 col-lg-2 col-form-label">Discount Price</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <input type="number" class="form-control" name="discount_price" id="discount_price" step="0.01" placeholder="Discount Price">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="promotion_start_time" class="col-sm-3 col-lg-2 col-form-label">Promotion Start</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <input type="datetime-local" class="form-control" name="promotion_start_time" id="promotion_start_time">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="promotion_end_time" class="col-sm-3 col-lg-2 col-form-label">Promotion End</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <input type="datetime-local" class="form-control" name="promotion_end_time" id="promotion_end_time">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="border border-light border-start-0 border-end-0 border-10 rounded-5">
+                    <div class="card-body rounded-5">
+                        <div class="row border-bottom border-5 border-light">
+                            <label for="stock" class="col-sm-3 col-lg-2 col-form-label">Stock</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <input type="number" class="form-control" name="stock" id="stock" placeholder="Stock Quantity" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="position" class="col-sm-3 col-lg-2 col-form-label">Position</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <input type="number" class="form-control" name="position" id="position" placeholder="Position for Product View">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="tags" class="col-sm-3 col-lg-2 col-form-label">Tags</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <select class="js-example-basic-multiple" multiple="multiple" style="width:100%" name="tags[]">
+                                    @foreach($tags as $tag)
+                                        <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="border border-light border-start-0 border-end-0 border-10 rounded-5">
+                    <div class="card-body rounded-5">
+                        <div class="row">
+                            <label for="image" class="col-sm-3 col-lg-2 col-form-label">Image</label>
+                            <div class="form-group col-sm-9 col-lg-10">
+                                <input type="file" class="form-control" name="image" id="image">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                        <!-- <div class="wrapper">
+                            <div class="box">
+                                <div class="js--image-preview"></div>
+                                <div class="upload-options">
+                                <label>
+                                    <input type="file" class="image-upload" accept="image/*" />
+                                </label>
+                                </div>
+                            </div>
+
+                            <div class="box">
+                                <div class="js--image-preview"></div>
+                                <div class="upload-options">
+                                <label>
+                                    <input type="file" class="image-upload" accept="image/*" />
+                                </label>
+                                </div>
+                            </div>
+
+                            <div class="box">
+                                <div class="js--image-preview"></div>
+                                <div class="upload-options">
+                                <label>
+                                    <input type="file" class="image-upload" accept="image/*" />
+                                </label>
+                                </div>
+                            </div>
+                        </div> -->
 
 
 
