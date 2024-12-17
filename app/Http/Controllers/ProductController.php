@@ -9,6 +9,7 @@ use App\Models\SubCategory;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -38,9 +39,20 @@ class ProductController extends Controller
             'has_delivery_free' => 'nullable|boolean',
             'tags' => 'nullable|array', // Tags array
             'tags.*' => 'exists:tags,id',
-            'image' => 'nullable|image|max:2048', // Max 2MB
+            'product_images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'created_by' => 'required|exists:users,id',
         ]);
+// Handle Product images upload
+$uploadedImages = [];
+if ($request->hasFile('product_images')) {
+    foreach ($request->file('product_images') as $image) {
+        $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+        $image->storeAs('public/product-images', $imageName);
+        $uploadedImages[] = 'storage/product-images/' . $imageName; // Store image path
+    }
+}
+
+
 
         $product = Product::create([
             'name' => $request->name,
@@ -53,7 +65,7 @@ class ProductController extends Controller
             'position' => $request->position,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'has_delivery_free' => $request->has('has_delivery_free') ? 1 : 0,
-            'image' => $request->file('image') ? $request->file('image')->store('products', 'public') : null,
+            'product_images' => json_encode($uploadedImages), // Store image paths as JSON // Store as JSON array
             'created_by' => $request->created_by,
         ]);
 

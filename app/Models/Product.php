@@ -20,7 +20,7 @@ class Product extends Model
         'position',
         'is_active',
         'has_delivery_free',
-        'image',
+        'product_images',
         'created_by'
     ];
     protected $casts = [

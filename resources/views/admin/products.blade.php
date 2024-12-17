@@ -2,151 +2,33 @@
 
 @section('content')
 <style>
-    @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
-@import url('https://fonts.googleapis.com/css?family=Raleway');
-
-// variables
-$base-color: cadetblue;
-$base-font: 'Raleway', sans-serif;
-
-body {
-  font-family: var(--bs-font-sans-serif);
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  background-color: lighten($base-color, 45%);
-}
-
-.wrapper{
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-}
-
-    .box {
-  display: block;
-  min-width: 100px;
-  height: 100px;
-  margin: 10px;
-  background-color: white;
-  border-radius: 5px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-  overflow: hidden;
-}
-
-.upload-options {
-  position: relative;
-  height: 75px;
-  background-color: green;
-  cursor: pointer;
-  overflow: hidden;
-  text-align: center;
-  transition: background-color ease-in-out 150ms;
-  &:hover {
-    background-color: lighten(green, 10%);
-  }
-  & input {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
-  }
-  & label {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    font-weight: 400;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    cursor: pointer;
-    overflow: hidden;
-    &::after {
-      content: 'add';
-      font-family: 'Material Icons';
-      position: absolute;
-      font-size: 2.5rem;
-      color: rgba(230, 230, 230, 1);
-      top: calc(50% - 2.5rem);
-      left: calc(50% - 1.25rem);
-      z-index: 0;
+    .image-slot img {
+        object-fit: cover;
+        border-radius: 5px;
+        width: 100%;
+        height: 100%;
     }
-    & span {
-      display: inline-block;
-      width: 50%;
-      height: 100%;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      vertical-align: middle;
-      text-align: center;
-      &:hover i.material-icons {
-        color: lightgray;
-      }
+
+    .image-slot .delete-btn, .image-slot .edit-btn {
+        position: absolute;
+        top: 5px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        cursor: pointer;
     }
-  }
-}
 
-
-.js--image-preview {
-  height: 225px;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  background-image: url('');
-  background-color: white;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  &::after {
-    content: "photo_size_select_actual";
-    font-family: 'Material Icons';
-    position: relative;
-    font-size: 4.5em;
-    color: rgba(230, 230, 230, 1);
-    top: calc(50% - 3rem);
-    left: calc(50% - 2.25rem);
-    z-index: 0;
-  }
-  &.js--no-default::after {
-    display: none;
-  }
-  &:nth-child(2) {
-    background-image: url('http://bastianandre.at/giphy.gif');
-  }
-}
-
-i.material-icons {
-  transition: color 100ms ease-in-out;
-  font-size: 2.25em;
-  line-height: 55px;
-  color: white;
-  display: block;
-}
-
-.drop {
-  display: block;
-  position: absolute;
-  background: transparentize(green, .8);
-  border-radius: 100%;
-  transform:scale(0);
-}
-
-.animate {
-  animation: ripple 0.4s linear;
-}
-
-@keyframes ripple {
-    100% {opacity: 0; transform: scale(2.5);}
-}
+    .image-slot .delete-btn { right: 5px; }
+    .image-slot .edit-btn { right: 35px; }
 </style>
+
 <div name="header" class="section-wrapper">
     <div class="page-header">
         <h2 class="display-4">Manage Products</h2>
@@ -157,15 +39,17 @@ i.material-icons {
     @endif
 
     <!-- Add Product -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <button class="btn btn-gradient-primary" type="button" onclick="toggleSection('create-product')">+ New Product</button>
+    <div class="mb-4">
+        <div class="card">
+            <div class="card-header">
+                <button class="btn btn-gradient-primary" type="button" onclick="toggleSection('create-product')">+ New Product</button>
+            </div>
         </div>
         <div id="create-product" class="d-none">
             <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="created_by" value="{{ auth()->id() }}">
-                <div class="border border-light border-start-0 border-end-0 border-10 rounded-5">
+                <div class="card border border-light border-start-0 border-end-0 border-10 rounded-5">
                     <div class="card-body">
                         <div class="row">
                             <label for="name" class="col-sm-3 col-lg-2 col-form-label">Product Name</label>
@@ -194,7 +78,7 @@ i.material-icons {
                         </div>
                     </div>
                 </div>
-                <div class="border border-light border-start-0 border-end-0 border-10 rounded-5">
+                <div class="card border border-light border-start-0 border-end-0 border-10 rounded-5">
                     <div class="card-body">
                         <div class="row">
                             <label for="description" class="col-sm-3 col-lg-2 col-form-label">Description</label>
@@ -204,7 +88,7 @@ i.material-icons {
                         </div>
                     </div>
                 </div>
-                <div class="border border-light border-start-0 border-end-0 border-10 rounded-5">
+                <div class="card border border-light border-start-0 border-end-0 border-10 rounded-5">
                     <div class="card-body rounded-5">
                         <div class="row">
                             <label for="price" class="col-sm-3 col-lg-2 col-form-label">Price</label>
@@ -232,9 +116,9 @@ i.material-icons {
                         </div>
                     </div>
                 </div>
-                <div class="border border-light border-start-0 border-end-0 border-10 rounded-5">
+                <div class="card border border-light border-start-0 border-end-0 border-10 rounded-5">
                     <div class="card-body rounded-5">
-                        <div class="row border-bottom border-5 border-light">
+                        <div class="row">
                             <label for="stock" class="col-sm-3 col-lg-2 col-form-label">Stock</label>
                             <div class="form-group col-sm-9 col-lg-10">
                                 <input type="number" class="form-control" name="stock" id="stock" placeholder="Stock Quantity" required>
@@ -258,68 +142,53 @@ i.material-icons {
                         </div>
                     </div>
                 </div>
-                <div class="border border-light border-start-0 border-end-0 border-10 rounded-5">
+                <div class="card border border-light border-start-0 border-end-0 border-10 rounded-5">
                     <div class="card-body rounded-5">
-                        <div class="row">
+                        <!-- <div class="row">
                             <label for="image" class="col-sm-3 col-lg-2 col-form-label">Image</label>
                             <div class="form-group col-sm-9 col-lg-10">
                                 <input type="file" class="form-control" name="image" id="image">
                             </div>
+                        </div> -->
+                        <!-- Main Image -->
+                        <div class="mb-3">
+                            <!-- <input type="file" class="input border-0 pt-2" id="" name="product_images[]" accept="image/*" multiple required> -->
+                            <label class="form-label"><strong>Product Images <i class="bi bi-info-circle"></i></strong></label>
+        <div id="image-upload-container" class="d-flex align-items-start gap-2 flex-wrap p-2 border rounded"
+            style="background-color: #f8fbfc; min-height: 120px;">
+            <!-- First Placeholder for Image Upload -->
+            <div class="image-slot position-relative" style="width: 120px; height: 120px;">
+                <label class="image-upload-btn d-flex justify-content-center align-items-center border rounded"
+                    style="width: 100%; height: 100%; cursor: pointer; background-color: #ffffff;">
+                    <input type="file" name="product_images[]" class="d-none image-input" accept="image/*">
+                    <span class="text-muted fs-1">+</span>
+                </label>
+            </div>
+        </div>
                         </div>
                     </div>
                 </div>
 
 
-                        <!-- <div class="wrapper">
-                            <div class="box">
-                                <div class="js--image-preview"></div>
-                                <div class="upload-options">
-                                <label>
-                                    <input type="file" class="image-upload" accept="image/*" />
-                                </label>
-                                </div>
-                            </div>
 
-                            <div class="box">
-                                <div class="js--image-preview"></div>
-                                <div class="upload-options">
-                                <label>
-                                    <input type="file" class="image-upload" accept="image/*" />
-                                </label>
-                                </div>
-                            </div>
-
-                            <div class="box">
-                                <div class="js--image-preview"></div>
-                                <div class="upload-options">
-                                <label>
-                                    <input type="file" class="image-upload" accept="image/*" />
-                                </label>
-                                </div>
-                            </div>
-                        </div> -->
-
-
-
-
-
-
-
-
-                <div class="form-check mb-3">
-                    <label class="form-check-label">
-                        <input type="checkbox" name="has_delivery_free" id="has_delivery_free" class="form-check-input" value="0">
-                        Free Delivery
-                    </label>
+                <div class="card border border-light border-start-0 border-end-0 border-10 rounded-5">
+                    <div class="card-body rounded-5">
+                        <div class="form-check mb-3">
+                            <label class="form-check-label">
+                                <input type="checkbox" name="has_delivery_free" id="has_delivery_free" class="form-check-input" value="0">
+                                Free Delivery
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <label class="form-check-label">
+                                <input type="checkbox" name="is_active" id="is_active" class="form-check-input" value="1" checked>
+                                Active
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-outline-primary"><i class="mdi mdi-file-check btn-icon-prepend"></i>Save</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleSection('create-product')"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                    </div>
                 </div>
-                <div class="form-check mb-3">
-                    <label class="form-check-label">
-                        <input type="checkbox" name="is_active" id="is_active" class="form-check-input" value="1" checked>
-                        Active
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="mdi mdi-file-check btn-icon-prepend"></i>Save</button>
-                <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleSection('create-product')"><i class="fa-solid fa-xmark"></i> Cancel</button>
             </form>
         </div>
     </div>
@@ -330,6 +199,7 @@ i.material-icons {
             <table class="table table-bordered table-hover">
                 <thead>
                     <tr>
+                        <th>P-Image</th>
                         <th>Name</th>
                         <th>Category</th>
                         <th>Price</th>
@@ -345,6 +215,17 @@ i.material-icons {
                 <tbody>
                 @forelse($products as $product)
                 <tr>
+                    <td>
+                        @if($product->pictures)
+                            <div class="existing-pictures">
+                                @foreach(json_decode($product->product_images, true) as $image)
+                                    <img class="mb-2 p-2" src="{{ asset('uploads/product-images/' . $image) }}" alt="{{ $product->name }} Image" height="180" width="260">
+                                @endforeach
+                            </div>
+                        @else
+                            No Images Available
+                        @endif
+                    </td>
                     <td>{{ $product->name }}</td>
                     <td>{{ $product->category->name }}</td>
                     <td>{{ $product->price }}</td>
@@ -485,8 +366,101 @@ i.material-icons {
         </div>
     </div>
 </div>
-<!-- For Category wise Subcategory view -->
-<!-- jQuery (Ensure this script is included) -->
+
+
+<!-- JavaScript for Image Previews and Drag-and-Drop -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('image-upload-container');
+
+        // Function to create a new empty image upload slot
+        function createImageSlot() {
+            const div = document.createElement('div');
+            div.classList.add('image-slot', 'position-relative');
+            div.style.width = '120px';
+            div.style.height = '120px';
+
+            div.innerHTML = `
+                <label class="image-upload-btn d-flex justify-content-center align-items-center border rounded"
+                    style="width: 100%; height: 100%; cursor: pointer; background-color: #ffffff;">
+                    <input type="file" name="product_images[]" class="d-none image-input" accept="image/*">
+                    <span class="text-muted fs-1">+</span>
+                </label>
+            `;
+
+            container.appendChild(div);
+            handleImageInput(div.querySelector('.image-input'), div);
+        }
+
+        // Function to handle image input change
+        function handleImageInput(input, parentDiv) {
+            input.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        // Replace the "+" placeholder with the image preview
+                        parentDiv.innerHTML = `
+                            <img src="${e.target.result}" alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;">
+                            <button type="button" class="edit-btn">&#9998;</button>
+                            <button type="button" class="delete-btn">&times;</button>
+                        `;
+
+                        // Handle Delete Button
+                        parentDiv.querySelector('.delete-btn').addEventListener('click', function () {
+                            parentDiv.remove();
+                            // Add new slot if there are no remaining image slots
+                            if (!container.querySelector('.image-input')) {
+                                createImageSlot();
+                            }
+                        });
+
+                        // Handle Edit Button
+                        parentDiv.querySelector('.edit-btn').addEventListener('click', function () {
+                            const newInput = document.createElement('input');
+                            newInput.type = 'file';
+                            newInput.accept = 'image/*';
+                            newInput.addEventListener('change', function () {
+                                const newFile = this.files[0];
+                                if (newFile) {
+                                    const newReader = new FileReader();
+                                    newReader.onload = function (e) {
+                                        parentDiv.querySelector('img').src = e.target.result;
+                                    };
+                                    newReader.readAsDataURL(newFile);
+                                }
+                            });
+                            newInput.click();
+                        });
+
+                        // Add a new empty slot if no file input is found
+                        if (!container.querySelector('.image-input')) {
+                            createImageSlot();
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Initialize the first image slot if no input exists
+        if (!container.querySelector('.image-input')) {
+            createImageSlot();
+        } else {
+            // Initialize existing inputs
+            container.querySelectorAll('.image-input').forEach(input => {
+                handleImageInput(input, input.closest('.image-slot'));
+            });
+        }
+    });
+</script>
+
+
+
+
+
+
+
 
 
 <script type="text/javascript">
@@ -566,97 +540,5 @@ i.material-icons {
         image_advtab: true,
         content_css: '//www.tiny.cloud/css/codepen.min.css', // Optional: use custom styling
     });
-</script>
-<script>
-    function initImageUpload(box) {
-  let uploadField = box.querySelector('.image-upload');
-
-  uploadField.addEventListener('change', getFile);
-
-  function getFile(e){
-    let file = e.currentTarget.files[0];
-    checkType(file);
-  }
-
-  function previewImage(file){
-    let thumb = box.querySelector('.js--image-preview'),
-        reader = new FileReader();
-
-    reader.onload = function() {
-      thumb.style.backgroundImage = 'url(' + reader.result + ')';
-    }
-    reader.readAsDataURL(file);
-    thumb.className += ' js--no-default';
-  }
-
-  function checkType(file){
-    let imageType = /image.*/;
-    if (!file.type.match(imageType)) {
-      throw 'Datei ist kein Bild';
-    } else if (!file){
-      throw 'Kein Bild gewählt';
-    } else {
-      previewImage(file);
-    }
-  }
-
-}
-
-// initialize box-scope
-var boxes = document.querySelectorAll('.box');
-
-for (let i = 0; i < boxes.length; i++) {
-  let box = boxes[i];
-  initDropEffect(box);
-  initImageUpload(box);
-}
-
-
-
-/// drop-effect
-function initDropEffect(box){
-  let area, drop, areaWidth, areaHeight, maxDistance, dropWidth, dropHeight, x, y;
-
-  // get clickable area for drop effect
-  area = box.querySelector('.js--image-preview');
-  area.addEventListener('click', fireRipple);
-
-  function fireRipple(e){
-    area = e.currentTarget
-    // create drop
-    if(!drop){
-      drop = document.createElement('span');
-      drop.className = 'drop';
-      this.appendChild(drop);
-    }
-    // reset animate class
-    drop.className = 'drop';
-
-    // calculate dimensions of area (longest side)
-    areaWidth = getComputedStyle(this, null).getPropertyValue("width");
-    areaHeight = getComputedStyle(this, null).getPropertyValue("height");
-    maxDistance = Math.max(parseInt(areaWidth, 10), parseInt(areaHeight, 10));
-
-    // set drop dimensions to fill area
-    drop.style.width = maxDistance + 'px';
-    drop.style.height = maxDistance + 'px';
-
-    // calculate dimensions of drop
-    dropWidth = getComputedStyle(this, null).getPropertyValue("width");
-    dropHeight = getComputedStyle(this, null).getPropertyValue("height");
-
-    // calculate relative coordinates of click
-    // logic: click coordinates relative to page - parent's position relative to page - half of self height/width to make it controllable from the center
-    x = e.pageX - this.offsetLeft - (parseInt(dropWidth, 10)/2);
-    y = e.pageY - this.offsetTop - (parseInt(dropHeight, 10)/2) - 30;
-
-    // position drop and animate
-    drop.style.top = y + 'px';
-    drop.style.left = x + 'px';
-    drop.className += ' animate';
-    e.stopPropagation();
-
-  }
-}
 </script>
 @endsection
