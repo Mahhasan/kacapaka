@@ -51,6 +51,32 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ledger" aria-expanded="false" aria-controls="ledger">
+            <i class="mdi mdi-lock menu-icon"></i>
+                <span class="menu-title">Ledger Management</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ledger">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('vendors.index') }}">Vendor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('ledger-types.index') }}"> Ledger Types </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('transaction-purposes.index') }}"> Transaction Purposes </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('transaction-items.index') }}"> Transaction Items </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('ledgers.index') }}"> Ledgers </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="{{ route('orders.index') }}">
             <span class="menu-title">Manage Orders</span>
             <i class="mdi mdi-home menu-icon"></i>

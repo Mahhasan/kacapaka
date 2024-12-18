@@ -2,7 +2,8 @@
 use App\Http\Controllers\{
     ProductController, CategoryController, SubCategoryController, OrderController,
     CartController, WishlistController, SliderController, OfferController,
-    ExpenseController, TagController, ProductTagController, RatingReviewController
+    ExpenseController, TagController, ProductTagController, RatingReviewController, VendorController, 
+    LedgerTypeController, TransactionPurposeController, TransactionItemController, LedgerController
 };
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +52,11 @@ Route::get('/get-subcategories/{categoryId}', [ProductController::class, 'getSub
     Route::resource('tags', TagController::class)->except(['create', 'edit', 'show']);
     Route::post('/tags/toggle-status/{id}', [TagController::class, 'toggleStatus'])->name('tags.toggle-status');
     Route::resource('product-tags', ProductTagController::class)->except(['create', 'edit', 'show']);
+    Route::resource('vendors', VendorController::class)->except(['show', 'create', 'edit']);
+    Route::resource('ledger-types', LedgerTypeController::class)->except(['show', 'create', 'edit']);
+    Route::resource('transaction-purposes', TransactionPurposeController::class)->except(['show', 'create', 'edit']);
+    Route::resource('transaction-items', TransactionItemController::class)->except(['show', 'create', 'edit']);
+    Route::resource('ledgers', LedgerController::class)->except(['show', 'create', 'edit']);
 });
 
 
