@@ -154,17 +154,16 @@
                         <div class="mb-3">
                             <!-- <input type="file" class="input border-0 pt-2" id="" name="product_images[]" accept="image/*" multiple required> -->
                             <label class="form-label"><strong>Product Images <i class="bi bi-info-circle"></i></strong></label>
-        <div id="image-upload-container" class="d-flex align-items-start gap-2 flex-wrap p-2 border rounded"
-            style="background-color: #f8fbfc; min-height: 120px;">
-            <!-- First Placeholder for Image Upload -->
-            <div class="image-slot position-relative" style="width: 120px; height: 120px;">
-                <label class="image-upload-btn d-flex justify-content-center align-items-center border rounded"
-                    style="width: 100%; height: 100%; cursor: pointer; background-color: #ffffff;">
-                    <input type="file" name="product_images[]" class="d-none image-input" accept="image/*">
-                    <span class="text-muted fs-1">+</span>
-                </label>
-            </div>
-        </div>
+                            <div id="image-upload-container" class="d-flex align-items-start gap-2 flex-wrap p-2 border rounded"
+                                style="background-color: #f8fbfc; min-height: 120px;">
+                                <!-- First Placeholder for Image Upload -->
+                                 <!-- innerHtmlwillbePlacedHere -->
+                            </div>
+
+
+
+
+
                         </div>
                     </div>
                 </div>
@@ -370,7 +369,6 @@
 
 <!-- JavaScript for Image Previews and Drag-and-Drop -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
         const container = document.getElementById('image-upload-container');
 
         // Function to create a new empty image upload slot
@@ -452,7 +450,6 @@
                 handleImageInput(input, input.closest('.image-slot'));
             });
         }
-    });
 </script>
 
 
