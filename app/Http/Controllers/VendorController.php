@@ -13,7 +13,7 @@ class VendorController extends Controller
     public function index()
     {
         $vendors = Vendor::orderBy('id', 'desc')->paginate(5); // Paginate vendors
-        return view('admin.vendors', compact('vendors'));
+        return view('admin.ledger-management.vendors', compact('vendors'));
     }
 
     /**

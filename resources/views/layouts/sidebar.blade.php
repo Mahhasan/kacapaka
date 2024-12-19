@@ -107,7 +107,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('sliders.index') }}">
+            <a class="nav-link" href="{{ route('web-sliders.index') }}">
             <span class="menu-title">Manage sliders</span>
             <i class="mdi mdi-home menu-icon"></i>
             </a>

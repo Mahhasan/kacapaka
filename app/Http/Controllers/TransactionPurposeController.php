@@ -9,66 +9,62 @@ use Illuminate\Http\Request;
 class TransactionPurposeController extends Controller
 {
     /**
-     * Display a listing of transactions.
+     * Display a listing of the transaction purposes.
      */
     public function index()
     {
-        $transactions = TransactionPurpose::with('ledgerType')->get(); // Fetch transactions with their ledger type
-        $ledgerTypes = LedgerType::all(); // Fetch all ledger types for the dropdown
-        return view('admin.transaction-purposes', compact('transactions', 'ledgerTypes'));
+        $transactionPurposes = TransactionPurpose::with('ledgerType')->get();
+        $ledgerTypes = LedgerType::all();
+        return view('admin.ledger-management.transaction-purposes', compact('transactionPurposes', 'ledgerTypes'));
     }
 
     /**
-     * Store a newly created transaction in storage.
+     * Store a newly created transaction purpose in storage.
      */
     public function store(Request $request)
     {
         $request->validate([
             'ledger_type_id' => 'required|exists:ledger_types,id',
-            'amount' => 'required|numeric|min:0.01',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
-            'transaction_date' => 'required|date',
         ]);
 
         TransactionPurpose::create([
             'ledger_type_id' => $request->ledger_type_id,
-            'amount' => $request->amount,
+            'name' => $request->name,
             'description' => $request->description,
-            'transaction_date' => $request->transaction_date,
         ]);
 
-        return redirect()->route('transaction-purposes.index')->with('success', 'Transaction added successfully.');
+        return redirect()->route('transaction-purposes.index')->with('success', 'Transaction purpose created successfully.');
     }
 
     /**
-     * Update the specified transaction in storage.
+     * Update the specified transaction purpose in storage.
      */
-    public function update(Request $request, TransactionPurpose $transaction)
+    public function update(Request $request, TransactionPurpose $transactionPurpose)
     {
         $request->validate([
             'ledger_type_id' => 'required|exists:ledger_types,id',
-            'amount' => 'required|numeric|min:0.01',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
-            'transaction_date' => 'required|date',
         ]);
 
-        $transaction->update([
+        $transactionPurpose->update([
             'ledger_type_id' => $request->ledger_type_id,
-            'amount' => $request->amount,
+            'name' => $request->name,
             'description' => $request->description,
-            'transaction_date' => $request->transaction_date,
         ]);
 
-        return redirect()->route('transaction-purposes.index')->with('success', 'Transaction updated successfully.');
+        return redirect()->route('transaction-purposes.index')->with('success', 'Transaction purpose updated successfully.');
     }
 
     /**
-     * Remove the specified transaction from storage.
+     * Remove the specified transaction purpose from storage.
      */
-    public function destroy(TransactionPurpose $transaction)
+    public function destroy(TransactionPurpose $transactionPurpose)
     {
-        $transaction->delete();
+        $transactionPurpose->delete();
 
-        return redirect()->route('transaction-purposes.index')->with('success', 'Transaction deleted successfully.');
+        return redirect()->route('transaction-purposes.index')->with('success', 'Transaction purpose deleted successfully.');
     }
 }

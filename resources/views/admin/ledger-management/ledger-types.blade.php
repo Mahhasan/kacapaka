@@ -1,16 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-<h1 class="mt-4">Ledger Types</h1>
+<div class="section-wrapper">
+    <h2 class="mt-4">Ledger Types</h2>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
         <li class="breadcrumb-item active">Ledger Types</li>
     </ol>
-<div class="section-wrapper">
-    <div class="page-header">
-        <h2 class="display-4">Manage Ledger Types</h2>
-    </div>
-
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif

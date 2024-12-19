@@ -10,7 +10,7 @@ class LedgerTypeController extends Controller
     public function index()
     {
         $ledgerTypes = LedgerType::all();
-        return view('admin.ledger-types', compact('ledgerTypes'));
+        return view('admin.ledger-management.ledger-types', compact('ledgerTypes'));
     }
 
     public function store(Request $request)

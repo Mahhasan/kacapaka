@@ -2,7 +2,7 @@
 use App\Http\Controllers\{
     ProductController, CategoryController, SubCategoryController, OrderController,
     CartController, WishlistController, SliderController, OfferController,
-    ExpenseController, TagController, ProductTagController, RatingReviewController, VendorController, 
+    ExpenseController, TagController, ProductTagController, RatingReviewController, VendorController,
     LedgerTypeController, TransactionPurposeController, TransactionItemController, LedgerController
 };
 use Illuminate\Support\Facades\Route;
@@ -42,11 +42,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/subcategories/toggle-status/{id}', [SubCategoryController::class, 'toggleStatus'])->name('subcategories.toggle-status');
     Route::resource('products', ProductController::class)->except(['create', 'edit', 'show']);
     Route::post('/products/toggle-status/{id}', [ProductController::class, 'toggleStatus'])->name('products.toggle-status');
-// Route to fetch subcategories
-Route::get('/get-subcategories/{categoryId}', [ProductController::class, 'getSubcategories']);
+    // Route to fetch subcategories
+    Route::get('/get-subcategories/{categoryId}', [ProductController::class, 'getSubcategories']);
 
     Route::resource('orders', OrderController::class)->except(['create', 'edit', 'show']);
-    Route::resource('sliders', SliderController::class)->except(['create', 'edit', 'show']);
     Route::resource('offers', OfferController::class)->except(['create', 'edit', 'show']);
     Route::resource('expenses', ExpenseController::class)->except(['create', 'edit', 'show']);
     Route::resource('tags', TagController::class)->except(['create', 'edit', 'show']);
@@ -57,6 +56,7 @@ Route::get('/get-subcategories/{categoryId}', [ProductController::class, 'getSub
     Route::resource('transaction-purposes', TransactionPurposeController::class)->except(['show', 'create', 'edit']);
     Route::resource('transaction-items', TransactionItemController::class)->except(['show', 'create', 'edit']);
     Route::resource('ledgers', LedgerController::class)->except(['show', 'create', 'edit']);
+    Route::resource('web-sliders', SliderController::class)->except(['create', 'edit', 'show']);
 });
 
 
@@ -66,7 +66,6 @@ Route::middleware(['auth', 'role:admin|super_admin'])->group(function () {
     // Route::resource('products', ProductController::class)->except(['create', 'edit', 'show']);
     // Route::resource('sub-categories', SubCategoryController::class)->except(['create', 'edit', 'show']);
     // Route::resource('orders', OrderController::class)->except(['create', 'edit', 'show']);
-    // Route::resource('sliders', SliderController::class)->except(['create', 'edit', 'show']);
     // Route::resource('offers', OfferController::class)->except(['create', 'edit', 'show']);
     // Route::resource('expenses', ExpenseController::class)->except(['create', 'edit', 'show']);
     // Route::resource('tags', TagController::class)->except(['create', 'edit', 'show']);

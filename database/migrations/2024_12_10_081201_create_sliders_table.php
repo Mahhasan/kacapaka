@@ -13,11 +13,32 @@ return new class extends Migration
     {
         Schema::create('sliders', function (Blueprint $table) {
             $table->id();
-            $table->string('image');
+
+            // Media Type: 'image', 'video', or 'link'
+            $table->string('media_type'); // 'image', 'video', or 'link'
+
+            // Media URL for link-type media (e.g., URL for external video)
+            $table->string('media_url')->nullable(); // For video link or image URL if used externally
+
+            // Columns for image or video file upload
+            $table->string('media_file_path')->nullable(); // Path to image or video uploaded from the device
+
+            // Clickable link (if any, for redirection when clicked)
+            $table->string('link')->nullable(); // Optional clickable link for redirection
+
+            // Active status (whether the slider/banner is active or not)
             $table->boolean('is_active')->default(true);
-            $table->integer('position')->default(0);
+
+            // Position (auto-detected last position, but editable)
+            $table->integer('position')->default(0); // Editable position
+
+            // Creator information (admin or user who created it)
+            $table->foreignId('created_by')->constrained('users'); // Creator user ID
+
+            // Timestamps
             $table->timestamps();
         });
+
     }
 
     /**

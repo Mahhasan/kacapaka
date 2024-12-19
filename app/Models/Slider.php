@@ -9,5 +9,5 @@ class Slider extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['image', 'is_active', 'position'];
+    protected $fillable = ['image', 'media_type', 'media_url', 'media_file_path', 'link', 'is_active', 'position', 'created_by'];
 }
