@@ -150,12 +150,12 @@ if ($request->hasFile('product_images')) {
     }
 
    // In your ProductController
-public function getSubcategories($categoryId)
-{
-    // Fetch subcategories based on the category ID
-    $subcategories = SubCategory::where('category_id', $categoryId)->get();
+    public function getSubcategories($categoryId)
+    {
+        // Fetch subcategories based on the category ID
+        $subcategories = SubCategory::where('category_id', $categoryId)->get();
 
-    // Return as JSON response
-    return response()->json($subcategories);
-}
+        // Return as JSON response
+        return response()->json($subcategories);
+    }
 }

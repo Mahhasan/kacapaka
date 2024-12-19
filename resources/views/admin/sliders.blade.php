@@ -102,10 +102,10 @@
                                 <tr>
                                     <td>
                                         @if($slider->media_type == 'image')
-                                            <img src="{{ asset('sliders/' . $slider->media_file_path) }}" alt="Slider Image" width="100">
+                                            <img src="{{ asset($slider->media_file_path) }}" alt="Slider Image" width="150">
                                         @elseif($slider->media_type == 'video')
-                                            <video width="100" controls>
-                                                <source src="{{ asset('sliders/' . $slider->media_file_path) }}" type="video/mp4">
+                                            <video width="130" controls>
+                                                <source src="{{ asset($slider->media_file_path) }}" type="video/mp4">
                                             </video>
                                         @elseif($slider->media_type == 'link')
                                             <a href="{{ $slider->media_url }}" target="_blank">View Link</a>
@@ -148,6 +148,60 @@
                                                     @method('PUT')
 
                                                     <!-- Form Fields for Edit -->
+                                                     <!-- Form Fields for Edit -->
+<div class="row">
+    <label for="media_type-{{ $slider->id }}" class="col-sm-3 col-lg-2 col-form-label">Media Type</label>
+    <div class="form-group col-sm-9 col-lg-10">
+        <select name="media_type" id="media_type-{{ $slider->id }}" class="form-control" required>
+            <option value="image" {{ $slider->media_type == 'image' ? 'selected' : '' }}>Image</option>
+            <option value="video" {{ $slider->media_type == 'video' ? 'selected' : '' }}>Video</option>
+            <option value="link" {{ $slider->media_type == 'link' ? 'selected' : '' }}>Link</option>
+        </select>
+    </div>
+</div>
+
+<div id="edit-media-file-section-{{ $slider->id }}" class="{{ $slider->media_type == 'link' ? 'd-none' : '' }}">
+    <div class="row">
+        <label for="media_file-{{ $slider->id }}" class="col-sm-3 col-lg-2 col-form-label">Media File</label>
+        <div class="form-group col-sm-9 col-lg-10">
+            <input type="file" name="media_file" id="media_file-{{ $slider->id }}" class="form-control-file">
+            @if($slider->media_file_path)
+                <p class="mt-2">Current: <a href="{{ asset($slider->media_file_path) }}" target="_blank">View File</a></p>
+            @endif
+        </div>
+    </div>
+</div>
+
+<div id="edit-media-url-section-{{ $slider->id }}" class="{{ $slider->media_type == 'link' ? '' : 'd-none' }}">
+    <div class="row">
+        <label for="media_url-{{ $slider->id }}" class="col-sm-3 col-lg-2 col-form-label">Media URL</label>
+        <div class="form-group col-sm-9 col-lg-10">
+            <input type="url" name="media_url" id="media_url-{{ $slider->id }}" class="form-control" placeholder="Enter media URL (for video link)" value="{{ $slider->media_url }}">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <label for="link-{{ $slider->id }}" class="col-sm-3 col-lg-2 col-form-label">Link</label>
+    <div class="form-group col-sm-9 col-lg-10">
+        <input type="url" name="link" id="link-{{ $slider->id }}" class="form-control" placeholder="Enter clickable link" value="{{ $slider->link }}">
+    </div>
+</div>
+
+<div class="row">
+    <label for="position-{{ $slider->id }}" class="col-sm-3 col-lg-2 col-form-label">Position</label>
+    <div class="form-group col-sm-9 col-lg-10">
+        <input type="number" name="position" id="position-{{ $slider->id }}" class="form-control" placeholder="Enter position (e.g., 1, 2)" value="{{ $slider->position }}">
+    </div>
+</div>
+
+<div class="form-check mb-3">
+    <label class="form-check-label" for="is_active-{{ $slider->id }}">
+        <input type="checkbox" name="is_active" id="is_active-{{ $slider->id }}" class="form-check-input" value="1" {{ $slider->is_active ? 'checked' : '' }}>
+        Active
+    </label>
+</div>
+
 
                                                     <button type="submit" class="btn btn-sm btn-outline-success">
                                                         <i class="mdi mdi-file-check btn-icon-prepend"></i> Update

@@ -109,4 +109,12 @@ class SliderController extends Controller
 
         return redirect()->route('web-sliders.index')->with('success', 'Slider deleted successfully.');
     }
+
+    public function toggleStatus(Request $request, $id)
+    {
+        $slider = Slider::findOrFail($id);
+        $slider->update(['is_active' => $request->is_active]);
+
+        return response()->json(['success' => true, 'message' => 'Status updated successfully']);
+    }
 }

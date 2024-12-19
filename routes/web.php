@@ -57,6 +57,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('transaction-items', TransactionItemController::class)->except(['show', 'create', 'edit']);
     Route::resource('ledgers', LedgerController::class)->except(['show', 'create', 'edit']);
     Route::resource('web-sliders', SliderController::class)->except(['create', 'edit', 'show']);
+    Route::post('/web-sliders/toggle-status/{id}', [SliderController::class, 'toggleStatus'])->name('web-sliders.toggle-status');
+
 });
 
 
