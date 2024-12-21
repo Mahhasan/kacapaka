@@ -25,8 +25,28 @@
         cursor: pointer;
     }
 
-    .image-slot .delete-btn { right: 5px; }
-    .image-slot .edit-btn { right: 35px; }
+    .btn-edit, .btn-delete {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-edit i, .btn-delete i {
+    font-size: 12px;
+}
+
+.btn-edit:hover {
+    background-color: rgba(0, 123, 255, 0.8);
+}
+
+.btn-delete:hover {
+    background-color: rgba(255, 0, 0, 0.8);
+}
+
 </style>
 
 <div name="header" class="section-wrapper">
@@ -151,16 +171,19 @@
                             </div>
                         </div> -->
                         <!-- Main Image -->
-                        <div class="mb-3">
+                        <div class="row">
                             <!-- <input type="file" class="input border-0 pt-2" id="" name="product_images[]" accept="image/*" multiple required> -->
-                            <label class="form-label"><strong>Product Images <i class="bi bi-info-circle"></i></strong></label>
+                            <!-- <label class="form-label"><strong>Product Images <i class="bi bi-info-circle"></i></strong></label>
                             <div id="image-upload-container" class="d-flex align-items-start gap-2 flex-wrap p-2 border rounded"
                                 style="background-color: #f8fbfc; min-height: 120px;">
-                                <!-- First Placeholder for Image Upload -->
-                                 <!-- innerHtmlwillbePlacedHere -->
+                            </div> -->
+                            <label for="tags" class="col-sm-3 col-lg-2 col-form-label">Product Images</label>
+                            <div class="col-sm-9 col-lg-10">
+                                <div id="image-upload-container" class="d-flex align-items-start gap-2 flex-wrap p-3 border rounded"
+                                style="background-color: #f8fbfc; min-height: 120px;">
+                                <!-- Dynamically added image slots will be here -->
                             </div>
-
-
+                            </div>
 
 
 
@@ -369,87 +392,95 @@
 
 <!-- JavaScript for Image Previews and Drag-and-Drop -->
 <script>
-        const container = document.getElementById('image-upload-container');
 
-        // Function to create a new empty image upload slot
-        function createImageSlot() {
-            const div = document.createElement('div');
-            div.classList.add('image-slot', 'position-relative');
-            div.style.width = '120px';
-            div.style.height = '120px';
+    function createImageSlot() {
+    const container = document.getElementById('image-upload-container');
+    const div = document.createElement('div');
+    div.classList.add('image-slot', 'position-relative');
+    div.style.width = '120px';
+    div.style.height = '120px';
 
-            div.innerHTML = `
-                <label class="image-upload-btn d-flex justify-content-center align-items-center border rounded"
-                    style="width: 100%; height: 100%; cursor: pointer; background-color: #ffffff;">
-                    <input type="file" name="product_images[]" class="d-none image-input" accept="image/*">
-                    <span class="text-muted fs-1">+</span>
-                </label>
-            `;
+    div.innerHTML = `
+        <label class="image-upload-btn d-flex justify-content-center align-items-center border rounded"
+            style="width: 100%; height: 100%; cursor: pointer; background-color: #ffffff;">
+            <input type="file" name="product_images[]" class="d-none image-input" accept="image/*">
+            <span class="text-muted fs-1">+</span>
+        </label>
+        <img class="preview-image" style="display: none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 5px;">
+        <button type="button" class="btn-edit position-absolute"
+            style="top: 5px; right: 35px; background-color: rgba(255, 255, 255, 0.7); border: none; cursor: pointer; display: none;">
+            <i class="fas fa-edit"></i>
+        </button>
+        <button type="button" class="btn-delete position-absolute"
+            style="top: 5px; right: 5px; background-color: rgba(255, 255, 255, 0.7); border: none; cursor: pointer; display: none;">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    `;
 
-            container.appendChild(div);
-            handleImageInput(div.querySelector('.image-input'), div);
+    const input = div.querySelector('input');
+    const preview = div.querySelector('.preview-image');
+    const btnEdit = div.querySelector('.btn-edit');
+    const btnDelete = div.querySelector('.btn-delete');
+
+    // Show preview, enable buttons, and add a new slot when an image is uploaded
+    input.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block'; // Show the preview image
+                btnEdit.style.display = 'block'; // Show edit button
+            };
+            reader.readAsDataURL(this.files[0]);
+
+            // Add a new slot if this is the last slot
+            if (Array.from(container.children).every(slot => slot.querySelector('.image-input').value)) {
+                createImageSlot();
+            }
+
+            updateDeleteButtonsVisibility();
         }
+    });
 
-        // Function to handle image input change
-        function handleImageInput(input, parentDiv) {
-            input.addEventListener('change', function () {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        // Replace the "+" placeholder with the image preview
-                        parentDiv.innerHTML = `
-                            <img src="${e.target.result}" alt="Product Image" style="width: 100%; height: 100%; object-fit: cover;">
-                            <button type="button" class="edit-btn">&#9998;</button>
-                            <button type="button" class="delete-btn">&times;</button>
-                        `;
+    // Handle delete button
+    btnDelete.addEventListener('click', function () {
+        div.remove(); // Remove the entire slot
+        updateDeleteButtonsVisibility();
+    });
 
-                        // Handle Delete Button
-                        parentDiv.querySelector('.delete-btn').addEventListener('click', function () {
-                            parentDiv.remove();
-                            // Add new slot if there are no remaining image slots
-                            if (!container.querySelector('.image-input')) {
-                                createImageSlot();
-                            }
-                        });
+    // Handle edit button (trigger the file input again)
+    btnEdit.addEventListener('click', function () {
+        input.click(); // Reopen the file input dialog
+    });
 
-                        // Handle Edit Button
-                        parentDiv.querySelector('.edit-btn').addEventListener('click', function () {
-                            const newInput = document.createElement('input');
-                            newInput.type = 'file';
-                            newInput.accept = 'image/*';
-                            newInput.addEventListener('change', function () {
-                                const newFile = this.files[0];
-                                if (newFile) {
-                                    const newReader = new FileReader();
-                                    newReader.onload = function (e) {
-                                        parentDiv.querySelector('img').src = e.target.result;
-                                    };
-                                    newReader.readAsDataURL(newFile);
-                                }
-                            });
-                            newInput.click();
-                        });
+    container.appendChild(div);
+    updateDeleteButtonsVisibility();
+}
 
-                        // Add a new empty slot if no file input is found
-                        if (!container.querySelector('.image-input')) {
-                            createImageSlot();
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
+// Update the visibility of delete buttons
+function updateDeleteButtonsVisibility() {
+    const container = document.getElementById('image-upload-container');
+    const slots = container.querySelectorAll('.image-slot');
+    const hasMultipleSlots = slots.length > 1;
 
-        // Initialize the first image slot if no input exists
-        if (!container.querySelector('.image-input')) {
-            createImageSlot();
-        } else {
-            // Initialize existing inputs
-            container.querySelectorAll('.image-input').forEach(input => {
-                handleImageInput(input, input.closest('.image-slot'));
-            });
-        }
+    slots.forEach(slot => {
+        const btnDelete = slot.querySelector('.btn-delete');
+        btnDelete.style.display = hasMultipleSlots ? 'block' : 'none';
+    });
+}
+
+// Initialize with the first image slot
+document.addEventListener('DOMContentLoaded', function () {
+    createImageSlot();
+});
+
+
+
+
+
+
+
+
 </script>
 
 

@@ -25,6 +25,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info('Request Data:', $request->all());
         $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -39,20 +40,25 @@ class ProductController extends Controller
             'has_delivery_free' => 'nullable|boolean',
             'tags' => 'nullable|array', // Tags array
             'tags.*' => 'exists:tags,id',
-            'product_images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'product_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'created_by' => 'required|exists:users,id',
         ]);
-// Handle Product images upload
-$uploadedImages = [];
-if ($request->hasFile('product_images')) {
-    foreach ($request->file('product_images') as $image) {
-        $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-        $image->storeAs('public/product-images', $imageName);
-        $uploadedImages[] = 'storage/product-images/' . $imageName; // Store image path
+
+         // Handle Product images upload
+    $uploadedImages = [];
+    if ($request->hasFile('product_images')) {
+        foreach ($request->file('product_images') as $image) {
+            // Store image in public/uploads/product-images
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/product-images'), $imageName);  // Change to move to the correct folder
+            $uploadedImages[] = 'uploads/product-images/' . $imageName;  // Store image path
+        }
     }
-}
+    else {
+        \Log::info('No files uploaded');  // Log if no files are uploaded
+    }
 
-
+    \Log::info('Uploaded Images:', $uploadedImages);
 
         $product = Product::create([
             'name' => $request->name,
