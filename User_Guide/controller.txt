@@ -1,0 +1,836 @@
+<?php
+
+// File: app/Http/Controllers/Admin/DashboardController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class DashboardController extends Controller
+{
+    /**
+     * অ্যাডমিন ড্যাশবোর্ড দেখানোর জন্য।
+     * এখানে আপনি বিভিন্ন রিপোর্ট (যেমন: মোট অর্ডার, মোট আয়) দেখানোর লজিক লিখবেন।
+     */
+    public function index()
+    {
+        // আপাতত শুধু ভিউ রিটার্ন করা হচ্ছে
+        return view('admin.dashboard');
+    }
+}
+```php
+<?php
+
+// File: app/Http/Controllers/Admin/CategoryController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Category;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
+class CategoryController extends Controller
+{
+    /**
+     * সব ক্যাটাগরি দেখানোর পেজ।
+     */
+    public function index()
+    {
+        $categories = Category::latest()->get();
+        return view('admin.categories.index', compact('categories'));
+    }
+
+    /**
+     * নতুন ক্যাটাগরি তৈরির ফর্ম দেখানোর পেজ।
+     */
+    public function create()
+    {
+        return view('admin.categories.create');
+    }
+
+    /**
+     * নতুন ক্যাটাগরি ডাটাবেজে সেভ করার জন্য।
+     * Note: Validation এর জন্য একটি Form Request (e.g., StoreCategoryRequest) তৈরি করা উচিত।
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'cat_name' => 'required|string|max:255|unique:categories',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $category = new Category();
+        $category->cat_name = $request->cat_name;
+        $category->slug = Str::slug($request->cat_name);
+        $category->description = $request->description;
+        $category->created_by = Auth::id();
+
+        if ($request->hasFile('image')) {
+            // এখানে ইমেজ স্টোর করার লজিক লিখতে হবে
+            // $path = $request->file('image')->store('categories', 'public');
+            // $category->image = $path;
+        }
+
+        $category->save();
+
+        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
+    }
+
+    /**
+     * নির্দিষ্ট কোনো ক্যাটাগরি দেখানোর জন্য (সাধারণত প্রয়োজন হয় না)।
+     */
+    public function show(Category $category)
+    {
+        return view('admin.categories.show', compact('category'));
+    }
+
+    /**
+     * ক্যাটাগরি এডিট করার ফর্ম দেখানোর জন্য।
+     */
+    public function edit(Category $category)
+    {
+        return view('admin.categories.edit', compact('category'));
+    }
+
+    /**
+     * ক্যাটাগরি আপডেট করার জন্য।
+     * Note: Validation এর জন্য একটি Form Request (e.g., UpdateCategoryRequest) তৈরি করা উচিত।
+     */
+    public function update(Request $request, Category $category)
+    {
+        $request->validate([
+            'cat_name' => 'required|string|max:255|unique:categories,cat_name,' . $category->id,
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $category->cat_name = $request->cat_name;
+        $category->slug = Str::slug($request->cat_name);
+        $category->description = $request->description;
+        $category->is_active = $request->has('is_active');
+
+        if ($request->hasFile('image')) {
+            // পুরনো ইমেজ ডিলিট করে নতুন ইমেজ আপলোড করার লজিক
+        }
+
+        $category->save();
+
+        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
+    }
+
+    /**
+     * ক্যাটাগরি ডিলিট করার জন্য।
+     */
+    public function destroy(Category $category)
+    {
+        // ইমেজ ফাইল ডিলিট করার লজিক
+        $category->delete();
+        return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
+    }
+}
+```php
+<?php
+
+// File: app/Http/Controllers/Admin/ProductController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Product;
+use App\Models\Brand;
+use App\Models\SubCategory;
+use App\Models\Tag;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
+class ProductController extends Controller
+{
+    /**
+     * সব প্রোডাক্ট দেখানোর পেজ।
+     */
+    public function index()
+    {
+        $products = Product::with(['subCategory.category', 'brand'])->latest()->get();
+        return view('admin.products.index', compact('products'));
+    }
+
+    /**
+     * নতুন প্রোডাক্ট তৈরির ফর্ম।
+     */
+    public function create()
+    {
+        $brands = Brand::where('is_active', true)->get();
+        $subCategories = SubCategory::where('is_active', true)->get();
+        $tags = Tag::where('is_active', true)->get();
+        return view('admin.products.create', compact('brands', 'subCategories', 'tags'));
+    }
+
+    /**
+     * নতুন প্রোডাক্ট সেভ করার জন্য।
+     * Note: Validation এর জন্য একটি Form Request তৈরি করা উচিত।
+     */
+    public function store(Request $request)
+    {
+        // Validation লজিক এখানে যুক্ত করতে হবে।
+        
+        $product = new Product();
+        $product->product_name = $request->product_name;
+        $product->slug = Str::slug($request->product_name);
+        // ... বাকি সব ফিল্ড এখানে যোগ করুন ...
+        $product->created_by = Auth::id();
+
+        if ($request->hasFile('thumbnail_image')) {
+            // থাম্বনেইল ইমেজ সেভ করার লজিক
+        }
+
+        $product->save();
+
+        // ট্যাগ যুক্ত করার লজিক
+        if ($request->has('tags')) {
+            $product->tags()->sync($request->tags);
+        }
+
+        // একাধিক ছবি সেভ করার লজিক (product_images table)
+
+        return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
+    }
+
+    /**
+     * প্রোডাক্ট এডিট করার ফর্ম।
+     */
+    public function edit(Product $product)
+    {
+        $brands = Brand::where('is_active', true)->get();
+        $subCategories = SubCategory::where('is_active', true)->get();
+        $tags = Tag::where('is_active', true)->get();
+        return view('admin.products.edit', compact('product', 'brands', 'subCategories', 'tags'));
+    }
+
+    /**
+     * প্রোডাক্ট আপডেট করার জন্য।
+     */
+    public function update(Request $request, Product $product)
+    {
+        // Validation লজিক এখানে যুক্ত করতে হবে।
+
+        $product->product_name = $request->product_name;
+        $product->slug = Str::slug($request->product_name);
+        // ... বাকি সব ফিল্ড আপডেট করুন ...
+
+        $product->save();
+
+        // ট্যাগ আপডেট করার লজিক
+        if ($request->has('tags')) {
+            $product->tags()->sync($request->tags);
+        }
+
+        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+    }
+
+    /**
+     * প্রোডাক্ট ডিলিট করার জন্য।
+     */
+    public function destroy(Product $product)
+    {
+        // এর সাথে যুক্ত সব ইমেজ ডিলিট করার লজিক
+        $product->delete();
+        return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
+    }
+}
+```php
+<?php
+
+// File: app/Http/Controllers/Admin/OrderController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Order;
+use Illuminate\Http\Request;
+
+class OrderController extends Controller
+{
+    /**
+     * সব অর্ডার দেখানোর পেজ।
+     */
+    public function index()
+    {
+        $orders = Order::with('customer')->latest()->get();
+        return view('admin.orders.index', compact('orders'));
+    }
+
+    /**
+     * একটি নির্দিষ্ট অর্ডারের বিস্তারিত দেখানোর জন্য।
+     */
+    public function show(Order $order)
+    {
+        // eager load items and their products
+        $order->load('items.product', 'customer', 'shippingAddress');
+        return view('admin.orders.show', compact('order'));
+    }
+
+    /**
+     * অর্ডারের স্ট্যাটাস আপডেট করার ফর্ম।
+     */
+    public function edit(Order $order)
+    {
+        return view('admin.orders.edit', compact('order'));
+    }
+
+    /**
+     * অর্ডারের স্ট্যাটাস এবং পেমেন্ট স্ট্যাটাস আপডেট করার জন্য।
+     */
+    public function update(Request $request, Order $order)
+    {
+        $request->validate([
+            'order_status' => 'required|in:Pending,Processing,Shipped,Delivered,Cancelled',
+            'payment_status' => 'required|in:Paid,Unpaid,Failed',
+        ]);
+
+        $order->order_status = $request->order_status;
+        $order->payment_status = $request->payment_status;
+        $order->save();
+
+        // এখানে গ্রাহককে ইমেইল বা SMS পাঠানোর লজিক যোগ করা যেতে পারে।
+
+        return redirect()->route('admin.orders.show', $order)->with('success', 'Order status updated successfully.');
+    }
+
+    /**
+     * অর্ডার ডিলিট করার জন্য (সাধারণত এটি করা হয় না, বরং Cancelled করা হয়)।
+     */
+    public function destroy(Order $order)
+    {
+        $order->delete();
+        return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
+    }
+}
+```php
+<?php
+
+// File: app/Http/Controllers/Admin/VendorController.php
+// Note: Brand, Tag, SubCategory, Promotion, ExpenseCategory ইত্যাদি কন্ট্রোলারগুলো
+// CategoryController এর মতোই হবে। শুধু Model এবং variable name পরিবর্তন করতে হবে।
+// নিচে VendorController এর একটি উদাহরণ দেওয়া হলো।
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Vendor;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class VendorController extends Controller
+{
+    public function index()
+    {
+        $vendors = Vendor::latest()->get();
+        return view('admin.vendors.index', compact('vendors'));
+    }
+
+    public function create()
+    {
+        return view('admin.vendors.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'vendor_name' => 'required|string|max:255',
+            'phone' => 'required|string|unique:vendors,phone',
+            'email' => 'nullable|email|unique:vendors,email',
+        ]);
+
+        Vendor::create($request->all() + ['created_by' => Auth::id()]);
+
+        return redirect()->route('admin.vendors.index')->with('success', 'Vendor created successfully.');
+    }
+
+    public function edit(Vendor $vendor)
+    {
+        return view('admin.vendors.edit', compact('vendor'));
+    }
+
+    public function update(Request $request, Vendor $vendor)
+    {
+        $request->validate([
+            'vendor_name' => 'required|string|max:255',
+            'phone' => 'required|string|unique:vendors,phone,' . $vendor->id,
+            'email' => 'nullable|email|unique:vendors,email,' . $vendor->id,
+        ]);
+        
+        $data = $request->all();
+        $data['is_active'] = $request->has('is_active');
+        $vendor->update($data);
+
+        return redirect()->route('admin.vendors.index')->with('success', 'Vendor updated successfully.');
+    }
+
+    public function destroy(Vendor $vendor)
+    {
+        $vendor->delete();
+        return redirect()->route('admin.vendors.index')->with('success', 'Vendor deleted successfully.');
+    }
+}
+
+------------------------------------------------------------
+
+<?php
+
+// File: app/Http/Controllers/Admin/SubCategoryController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\SubCategory;
+use App\Models\Category;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
+class SubCategoryController extends Controller
+{
+    /**
+     * সব সাব-ক্যাটাগরি দেখানোর পেজ।
+     */
+    public function index()
+    {
+        $subCategories = SubCategory::with('category')->latest()->get();
+        return view('admin.sub_categories.index', compact('subCategories'));
+    }
+
+    /**
+     * নতুন সাব-ক্যাটাগরি তৈরির ফর্ম।
+     */
+    public function create()
+    {
+        $categories = Category::where('is_active', true)->get();
+        return view('admin.sub_categories.create', compact('categories'));
+    }
+
+    /**
+     * নতুন সাব-ক্যাটাগরি সেভ করার জন্য।
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'subcat_name' => 'required|string|max:255',
+        ]);
+
+        SubCategory::create([
+            'category_id' => $request->category_id,
+            'subcat_name' => $request->subcat_name,
+            'slug' => Str::slug($request->subcat_name),
+            'created_by' => Auth::id(),
+        ]);
+
+        return redirect()->route('admin.sub-categories.index')->with('success', 'Sub-category created successfully.');
+    }
+
+    /**
+     * সাব-ক্যাটাগরি এডিট করার ফর্ম।
+     */
+    public function edit(SubCategory $subCategory)
+    {
+        $categories = Category::where('is_active', true)->get();
+        return view('admin.sub_categories.edit', compact('subCategory', 'categories'));
+    }
+
+    /**
+     * সাব-ক্যাটাগরি আপডেট করার জন্য।
+     */
+    public function update(Request $request, SubCategory $subCategory)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'subcat_name' => 'required|string|max:255',
+        ]);
+
+        $subCategory->update([
+            'category_id' => $request->category_id,
+            'subcat_name' => $request->subcat_name,
+            'slug' => Str::slug($request->subcat_name),
+            'is_active' => $request->has('is_active'),
+        ]);
+
+        return redirect()->route('admin.sub-categories.index')->with('success', 'Sub-category updated successfully.');
+    }
+
+    /**
+     * সাব-ক্যাটাগরি ডিলিট করার জন্য।
+     */
+    public function destroy(SubCategory $subCategory)
+    {
+        $subCategory->delete();
+        return redirect()->route('admin.sub-categories.index')->with('success', 'Sub-category deleted successfully.');
+    }
+}
+```php
+<?php
+
+// File: app/Http/Controllers/Admin/BrandController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Brand;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
+class BrandController extends Controller
+{
+    // এই কন্ট্রোলারের কোড CategoryController এর মতোই হবে।
+    // শুধু Model এবং variable name পরিবর্তন করতে হবে।
+    // নিচে একটি পূর্ণাঙ্গ উদাহরণ দেওয়া হলো।
+
+    public function index()
+    {
+        $brands = Brand::latest()->get();
+        return view('admin.brands.index', compact('brands'));
+    }
+
+    public function create()
+    {
+        return view('admin.brands.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'brand_name' => 'required|string|max:255|unique:brands',
+            'logo' => 'nullable|image|max:2048',
+        ]);
+
+        $data = $request->only('brand_name', 'description');
+        $data['slug'] = Str::slug($request->brand_name);
+        $data['created_by'] = Auth::id();
+
+        if ($request->hasFile('logo')) {
+            // লোগো সেভ করার লজিক
+        }
+
+        Brand::create($data);
+        return redirect()->route('admin.brands.index')->with('success', 'Brand created successfully.');
+    }
+
+    public function edit(Brand $brand)
+    {
+        return view('admin.brands.edit', compact('brand'));
+    }
+
+    public function update(Request $request, Brand $brand)
+    {
+        $request->validate([
+            'brand_name' => 'required|string|max:255|unique:brands,brand_name,' . $brand->id,
+            'logo' => 'nullable|image|max:2048',
+        ]);
+
+        $data = $request->only('brand_name', 'description');
+        $data['slug'] = Str::slug($request->brand_name);
+        $data['is_active'] = $request->has('is_active');
+
+        if ($request->hasFile('logo')) {
+            // পুরনো লোগো ডিলিট করে নতুন লোগো সেভ করার লজিক
+        }
+
+        $brand->update($data);
+        return redirect()->route('admin.brands.index')->with('success', 'Brand updated successfully.');
+    }
+
+    public function destroy(Brand $brand)
+    {
+        // লোগো ফাইল ডিলিট করার লজিক
+        $brand->delete();
+        return redirect()->route('admin.brands.index')->with('success', 'Brand deleted successfully.');
+    }
+}
+```php
+<?php
+
+// File: app/Http/Controllers/Admin/TagController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Tag;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
+class TagController extends Controller
+{
+    // এই কন্ট্রোলারটিও CategoryController এর মতো।
+
+    public function index()
+    {
+        $tags = Tag::latest()->get();
+        return view('admin.tags.index', compact('tags'));
+    }
+
+    public function create()
+    {
+        return view('admin.tags.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate(['tag_name' => 'required|string|unique:tags|max:255']);
+        Tag::create([
+            'tag_name' => $request->tag_name,
+            'slug' => Str::slug($request->tag_name),
+            'created_by' => Auth::id(),
+        ]);
+        return redirect()->route('admin.tags.index')->with('success', 'Tag created successfully.');
+    }
+
+    public function edit(Tag $tag)
+    {
+        return view('admin.tags.edit', compact('tag'));
+    }
+
+    public function update(Request $request, Tag $tag)
+    {
+        $request->validate(['tag_name' => 'required|string|unique:tags,tag_name,' . $tag->id . '|max:255']);
+        $tag->update([
+            'tag_name' => $request->tag_name,
+            'slug' => Str::slug($request->tag_name),
+            'is_active' => $request->has('is_active'),
+        ]);
+        return redirect()->route('admin.tags.index')->with('success', 'Tag updated successfully.');
+    }
+
+    public function destroy(Tag $tag)
+    {
+        $tag->delete();
+        return redirect()->route('admin.tags.index')->with('success', 'Tag deleted successfully.');
+    }
+}
+```php
+<?php
+
+// File: app/Http/Controllers/Admin/PromotionController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Promotion;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class PromotionController extends Controller
+{
+    // এই কন্ট্রোলারটিও প্রায় একই রকম।
+
+    public function index()
+    {
+        $promotions = Promotion::latest()->get();
+        return view('admin.promotions.index', compact('promotions'));
+    }
+
+    public function create()
+    {
+        return view('admin.promotions.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'promo_code' => 'required|string|unique:promotions',
+            'type' => 'required|in:Percentage,Fixed Amount',
+            'value' => 'required|numeric|min:0',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        Promotion::create($request->all() + ['created_by' => Auth::id()]);
+
+        return redirect()->route('admin.promotions.index')->with('success', 'Promotion created successfully.');
+    }
+
+    public function edit(Promotion $promotion)
+    {
+        return view('admin.promotions.edit', compact('promotion'));
+    }
+
+    public function update(Request $request, Promotion $promotion)
+    {
+        // Validation লজিক এখানে যুক্ত করুন
+        $data = $request->all();
+        $data['is_active'] = $request->has('is_active');
+        $promotion->update($data);
+        return redirect()->route('admin.promotions.index')->with('success', 'Promotion updated successfully.');
+    }
+
+    public function destroy(Promotion $promotion)
+    {
+        $promotion->delete();
+        return redirect()->route('admin.promotions.index')->with('success', 'Promotion deleted successfully.');
+    }
+}
+```php
+<?php
+
+// File: app/Http/Controllers/Admin/CustomerController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\User; // Assuming customers are in the User model
+use Illuminate\Http\Request;
+
+class CustomerController extends Controller
+{
+    /**
+     * সব গ্রাহকের তালিকা দেখানোর জন্য।
+     */
+    public function index()
+    {
+        // এখানে শুধু সাধারণ ব্যবহারকারীদের (গ্রাহক) ফিল্টার করার লজিক যোগ করতে পারেন
+        $customers = User::where('is_admin', false)->latest()->get(); // Example filter
+        return view('admin.customers.index', compact('customers'));
+    }
+
+    /**
+     * একজন গ্রাহকের বিস্তারিত তথ্য দেখানোর জন্য।
+     */
+    public function show(User $customer)
+    {
+        // গ্রাহকের অর্ডার এবং অন্যান্য তথ্য লোড করুন
+        $customer->load('orders');
+        return view('admin.customers.show', compact('customer'));
+    }
+}
+```php
+<?php
+
+// File: app/Http/Controllers/Admin/ProductReviewController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\ProductReview;
+use Illuminate\Http\Request;
+
+class ProductReviewController extends Controller
+{
+    /**
+     * সব রিভিউ দেখানোর জন্য।
+     */
+    public function index()
+    {
+        $reviews = ProductReview::with(['product', 'customer'])->latest()->get();
+        return view('admin.reviews.index', compact('reviews'));
+    }
+
+    /**
+     * রিভিউ অ্যাপ্রুভ বা স্ট্যাটাস পরিবর্তন করার জন্য।
+     */
+    public function update(Request $request, ProductReview $review)
+    {
+        $review->is_approved = $request->has('is_approved');
+        $review->is_active = $request->has('is_active');
+        $review->save();
+
+        return redirect()->route('admin.reviews.index')->with('success', 'Review status updated.');
+    }
+
+    /**
+     * রিভিউ ডিলিট করার জন্য।
+     */
+    public function destroy(ProductReview $review)
+    {
+        $review->delete();
+        return redirect()->route('admin.reviews.index')->with('success', 'Review deleted successfully.');
+    }
+}
+```php
+<?php
+
+// File: app/Http/Controllers/Admin/TransactionController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
+
+class TransactionController extends Controller
+{
+    /**
+     * সব লেনদেন দেখানোর জন্য।
+     */
+    public function index()
+    {
+        $transactions = Transaction::with('sourceable')->latest()->get();
+        return view('admin.transactions.index', compact('transactions'));
+    }
+}
+```php
+<?php
+
+// File: app/Http/Controllers/Admin/ExpenseController.php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Expense;
+use App\Models\ExpenseCategory;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class ExpenseController extends Controller
+{
+    public function index()
+    {
+        $expenses = Expense::with('category')->latest()->get();
+        return view('admin.expenses.index', compact('expenses'));
+    }
+
+    public function create()
+    {
+        $categories = ExpenseCategory::where('is_active', true)->get();
+        return view('admin.expenses.create', compact('categories'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'expense_category_id' => 'required|exists:expense_categories,id',
+            'amount' => 'required|numeric|min:0',
+            'description' => 'required|string',
+            'expense_date' => 'required|date',
+        ]);
+
+        Expense::create($request->all() + ['created_by' => Auth::id()]);
+
+        return redirect()->route('admin.expenses.index')->with('success', 'Expense recorded successfully.');
+    }
+
+    public function edit(Expense $expense)
+    {
+        $categories = ExpenseCategory::where('is_active', true)->get();
+        return view('admin.expenses.edit', compact('expense', 'categories'));
+    }
+
+    public function update(Request $request, Expense $expense)
+    {
+        // Validation লজিক এখানে যুক্ত করুন
+        $data = $request->all();
+        $data['is_active'] = $request->has('is_active');
+        $expense->update($data);
+
+        return redirect()->route('admin.expenses.index')->with('success', 'Expense updated successfully.');
+    }
+
+    public function destroy(Expense $expense)
+    {
+        $expense->delete();
+        return redirect()->route('admin.expenses.index')->with('success', 'Expense deleted successfully.');
+    }
+}
+

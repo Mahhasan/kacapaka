@@ -1,0 +1,27 @@
+hey How are you?
+
+আমার অনলাইন ব্যাবসা আছে।
+নাম কাঁচাপাকা ,
+আমি একটা ওয়েবসাইট বানাইতে চাচ্ছি, এবং একটি আডমিন ড্যাশবোর্ড বানাইতে চাচ্ছি , যেটার মাধ্যমে আমি আমার পুরো ব্যাবসা শুশঠভাবে  পরিচালনা করতে পারবো।
+আর এই জন্নে প্রথমে সুন্দর ভাবে ডাটাবেজ ডিজাইন করতে হবে। যেসব বিষয় যুক্ত থাকতে পারেঃ
+
+Categories Management
+Sub-Categories Management
+Product Management
+Order Management
+Customer Management
+Ledger Management
+Expense Management
+Product tag Management
+Promotion Management
+vendor Management
+employee Management
+Account Management
+Event Management
+Product Tracking
+Full overview of business
+ETC
+
+এইখান থেকে যেগুলো অপ্রয়োজনীয় ওইগুলো বাদ দাও এবং যা প্রয়োজনীয় তুমি যুক্ত করে সুন্দর ভাবে ডাটাবেজ ডিজাইন করে দাও।
+
+Note: সব টেবিলে status (Active/Inactive) কলাম যুক্ত করতে হবে, 

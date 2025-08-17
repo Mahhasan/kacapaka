@@ -1,0 +1,279 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        // === PRODUCT MANAGEMENT ===
+
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('cat_name')->unique();
+            $table->string('slug')->unique();
+            $table->string('image')->nullable();
+            $table->text('description')->nullable();
+            $table->unsignedInteger('position')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('sub_categories', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+            $table->string('subcat_name');
+            $table->string('slug')->unique();
+            $table->unsignedInteger('position')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('brands', function (Blueprint $table) {
+            $table->id();
+            $table->string('brand_name')->unique();
+            $table->string('slug')->unique();
+            $table->string('logo')->nullable();
+            $table->unsignedInteger('position')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('tags', function (Blueprint $table) {
+            $table->id();
+            $table->string('tag_name')->unique();
+            $table->string('slug')->unique();
+            $table->unsignedInteger('position')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('products', function (Blueprint $table) {
+            $table->id();
+            $table->string('product_name');
+            $table->string('slug')->unique();
+            $table->string('sku')->unique()->nullable();
+            $table->foreignId('sub_category_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
+            $table->text('short_description')->nullable();
+            $table->longText('description')->nullable();
+            $table->decimal('purchase_price', 10, 2)->default(0);
+            $table->decimal('selling_price', 10, 2);
+            $table->decimal('discount_price', 10, 2)->nullable();
+            $table->integer('stock_quantity')->default(0);
+            $table->string('thumbnail_image');
+            $table->string('unit')->comment('e.g., kg, piece, liter');
+            $table->boolean('has_free_delivery')->default(false);
+            $table->unsignedInteger('position')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('product_images', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->string('image_url');
+            $table->unsignedInteger('position')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('product_tags', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('tag_id')->constrained()->cascadeOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('product_reviews', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('customer_id')->constrained('users')->cascadeOnDelete(); // Created by customer
+            $table->unsignedTinyInteger('rating')->comment('Rating from 1 to 5');
+            $table->text('review_text')->nullable();
+            $table->boolean('is_approved')->default(false);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+
+        // === INVENTORY & SOURCING ===
+
+        Schema::create('vendors', function (Blueprint $table) {
+            $table->id();
+            $table->string('vendor_name');
+            $table->string('contact_person')->nullable();
+            $table->string('phone')->unique();
+            $table->string('email')->unique()->nullable();
+            $table->text('address')->nullable();
+            $table->unsignedInteger('position')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('purchase_orders', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('vendor_id')->constrained()->cascadeOnDelete();
+            $table->string('purchase_order_code')->unique();
+            $table->date('order_date');
+            $table->date('expected_delivery_date')->nullable();
+            $table->decimal('total_amount', 10, 2);
+            $table->decimal('paid_amount', 10, 2)->default(0);
+            $table->enum('payment_status', ['Paid', 'Unpaid', 'Partial'])->default('Unpaid');
+            $table->enum('order_status', ['Pending', 'Processing', 'Received', 'Cancelled'])->default('Pending');
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('purchase_order_items', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('purchase_order_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->integer('quantity');
+            $table->decimal('cost_per_unit', 10, 2);
+            $table->decimal('total_cost', 10, 2);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+
+        // === SALES & CUSTOMER INTERACTION ===
+
+        Schema::create('customer_addresses', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('customer_id')->constrained('users')->cascadeOnDelete(); // Created by customer
+            $table->string('address_line_1');
+            $table->string('address_line_2')->nullable();
+            $table->string('city');
+            $table->string('postal_code')->nullable();
+            $table->boolean('is_default')->default(false);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+
+        Schema::create('carts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('customer_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->integer('quantity');
+            $table->timestamps();
+        });
+
+        Schema::create('promotions', function (Blueprint $table) {
+            $table->id();
+            $table->string('promo_code')->unique();
+            $table->enum('type', ['Percentage', 'Fixed Amount']);
+            $table->decimal('value', 10, 2);
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
+            $table->integer('usage_limit')->nullable();
+            $table->unsignedInteger('position')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('orders', function (Blueprint $table) {
+            $table->id();
+            $table->string('order_number')->unique();
+            $table->foreignId('customer_id')->constrained('users')->cascadeOnDelete(); // Created by customer
+            $table->foreignId('shipping_address_id')->constrained('customer_addresses')->cascadeOnDelete();
+            $table->foreignId('promotion_id')->nullable()->constrained()->nullOnDelete();
+            $table->decimal('sub_total', 10, 2);
+            $table->decimal('discount_amount', 10, 2)->default(0);
+            $table->decimal('shipping_cost', 10, 2)->default(0);
+            $table->decimal('total_amount', 10, 2);
+            $table->enum('payment_method', ['Cash on Delivery', 'Manual Transfer']);
+            $table->enum('payment_status', ['Paid', 'Unpaid', 'Failed'])->default('Unpaid');
+            $table->string('manual_transaction_id')->nullable();
+            $table->text('payment_details')->nullable();
+            $table->enum('order_status', ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'])->default('Pending');
+            $table->text('notes')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+
+        Schema::create('order_items', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->integer('quantity');
+            $table->decimal('price_per_unit', 10, 2);
+            $table->decimal('total_price', 10, 2);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+
+        // === FINANCE ===
+
+        Schema::create('expense_categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('exp_cat_name');
+            $table->text('description')->nullable();
+            $table->unsignedInteger('position')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        Schema::create('expenses', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('expense_category_id')->constrained()->cascadeOnDelete();
+            $table->decimal('amount', 10, 2);
+            $table->text('description');
+            $table->date('expense_date');
+            $table->foreignId('created_by')->constrained('users'); // Already existed
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+
+        Schema::create('transactions', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('sourceable'); // Replaces order_id and expense_id
+            $table->decimal('amount', 10, 2);
+            $table->enum('type', ['Credit', 'Debit']);
+            $table->string('description');
+            $table->timestamp('transaction_date');
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        // Drop tables in reverse order of creation to avoid foreign key constraints issues
+        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('expenses');
+        Schema::dropIfExists('expense_categories');
+        Schema::dropIfExists('order_items');
+        Schema::dropIfExists('orders');
+        Schema::dropIfExists('promotions');
+        Schema::dropIfExists('carts');
+        Schema::dropIfExists('customer_addresses');
+        Schema::dropIfExists('purchase_order_items');
+        Schema::dropIfExists('purchase_orders');
+        Schema::dropIfExists('vendors');
+        Schema::dropIfExists('product_reviews');
+        Schema::dropIfExists('product_tags');
+        Schema::dropIfExists('product_images');
+        Schema::dropIfExists('products');
+        Schema::dropIfExists('tags');
+        Schema::dropIfExists('brands');
+        Schema::dropIfExists('sub_categories');
+        Schema::dropIfExists('categories');
+    }
+};

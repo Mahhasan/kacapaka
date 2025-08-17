@@ -32,11 +32,11 @@
                     <!-- Dropdown Menu for User Information -->
                     <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                         aria-labelledby="userDropdownMobile">
-                        <a class="dropdown-item" href="{{ route('user.profile') }}">
+                        <a class="dropdown-item" href="user.profile">
                             <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                             Profile
                         </a>
-                        <a class="dropdown-item" href="{{ route('user.orders') }}">
+                        <a class="dropdown-item" href="user.orders">
                             <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                             Orders
                         </a>
@@ -95,11 +95,11 @@
                         <!-- Dropdown Menu for User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                             aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="{{ route('user.profile') }}">
+                            <a class="dropdown-item" href="user.profile">
                                 <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Profile
                             </a>
-                            <a class="dropdown-item" href="{{ route('user.orders') }}">
+                            <a class="dropdown-item" href="user.orders">
                                 <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Orders
                             </a>

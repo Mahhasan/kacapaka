@@ -1,0 +1,94 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+// Admin Controller Imports
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\VendorController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\PurchaseOrderController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PromotionController;
+use App\Http\Controllers\Admin\ExpenseCategoryController;
+use App\Http\Controllers\Admin\ExpenseController;
+use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\ProductReviewController;
+
+// Frontend/Profile Controller Imports
+use App\Http\Controllers\ProfileController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+// 1. Frontend Routes (Publicly Accessible)
+//================================================
+Route::get('/', function () {
+    return view('welcome'); // Your application's homepage
+});
+
+
+// 2. Authenticated User Routes (From Laravel Breeze)
+//================================================
+// This route is for authenticated users' dashboard, e.g., customer dashboard
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+// Profile routes for authenticated users to manage their profile
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+
+// 3. Admin Panel Routes
+//================================================
+// All admin routes are grouped here.
+// They are prefixed with '/admin', named 'admin.', and protected by 'auth' middleware.
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+
+    // Admin Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // --- CATALOG MANAGEMENT ---
+    Route::resource('categories', CategoryController::class);
+    Route::resource('sub-categories', SubCategoryController::class);
+    Route::resource('brands', BrandController::class);
+    Route::resource('tags', TagController::class);
+    Route::resource('products', ProductController::class);
+    // Note: You might need extra routes for product images, e.g., POST /products/{product}/images
+
+    // --- INVENTORY & SOURCING ---
+    Route::resource('vendors', VendorController::class);
+    Route::resource('purchase-orders', PurchaseOrderController::class);
+
+    // --- SALES & CUSTOMERS ---
+    Route::resource('orders', OrderController::class)->only(['index', 'show', 'update', 'destroy']); // Admins typically don't create orders manually
+    Route::resource('customers', CustomerController::class)->only(['index', 'show']);
+    Route::resource('promotions', PromotionController::class);
+    Route::resource('reviews', ProductReviewController::class)->only(['index', 'update', 'destroy']); // For approving/deleting reviews
+
+    // --- FINANCE MANAGEMENT ---
+    Route::resource('expense-categories', ExpenseCategoryController::class);
+    Route::resource('expenses', ExpenseController::class);
+    Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
+
+});
+
+
+// This is the default authentication routes file provided by Laravel.
+require __DIR__.'/auth.php';

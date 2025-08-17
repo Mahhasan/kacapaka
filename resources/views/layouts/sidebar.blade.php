@@ -20,118 +20,128 @@
             <i class="mdi mdi-home menu-icon"></i>
             </a>
         </li>
+<li class="nav-item">
+    <a class="nav-link" data-bs-toggle="collapse" href="#user-management" aria-expanded="false" aria-controls="user-management">
+        <span class="menu-title">User Management</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-account-group menu-icon"></i>
+    </a>
+    <div class="collapse" id="user-management">
+        <ul class="nav flex-column sub-menu">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.employees.index') }}">Employees</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.customers.index') }}">Customers</a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link" data-bs-toggle="collapse" href="#catalog-management" aria-expanded="false" aria-controls="catalog-management">
+        <span class="menu-title">Catalog Management</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-store menu-icon"></i>
+    </a>
+    <div class="collapse" id="catalog-management">
+        <ul class="nav flex-column sub-menu">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.products.index') }}">Products</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.categories.index') }}">Categories</a>
+            </li>
+             <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.sub-categories.index') }}">Sub-Categories</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.brands.index') }}">Brands</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.tags.index') }}">Tags</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.reviews.index') }}">Product Reviews</a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link" data-bs-toggle="collapse" href="#inventory-management" aria-expanded="false" aria-controls="inventory-management">
+        <span class="menu-title">Inventory & Sourcing</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-archive menu-icon"></i>
+    </a>
+    <div class="collapse" id="inventory-management">
+        <ul class="nav flex-column sub-menu">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.vendor.index') }}">Vendors</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.purchase-orders.index') }}">Purchase Orders</a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link" data-bs-toggle="collapse" href="#sales-management" aria-expanded="false" aria-controls="sales-management">
+        <span class="menu-title">Sales & Promotions</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-cart menu-icon"></i>
+    </a>
+    <div class="collapse" id="sales-management">
+        <ul class="nav flex-column sub-menu">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.orders.index') }}">Orders</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.promotions.index') }}">Promotions</a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link" data-bs-toggle="collapse" href="#finance-management" aria-expanded="false" aria-controls="finance-management">
+        <span class="menu-title">Finance Management</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-currency-bdt menu-icon"></i>
+    </a>
+    <div class="collapse" id="finance-management">
+        <ul class="nav flex-column sub-menu">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.expense-categories.index') }}">Expense Categories</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.expenses.index') }}">Expenses</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.transactions.index') }}">Transactions</a>
+            </li>
+        </ul>
+    </div>
+</li>
+
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('users.index') }}">
-            <span class="menu-title">Manage Users</span>
-            <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('roles.index') }}">
-            <span class="menu-title">Manage Role</span>
-            <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('categories.index') }}">
-            <span class="menu-title">Manage Categories</span>
-            <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('subcategories.index') }}">
-            <span class="menu-title">Manage Sub-Category</span>
-            <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('products.index') }}">
-            <span class="menu-title">Manage Product</span>
-            <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="collapse" href="#ledger" aria-expanded="false" aria-controls="ledger">
-            <i class="mdi mdi-lock menu-icon"></i>
-                <span class="menu-title">Ledger Management</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ledger">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('vendors.index') }}">Vendor</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('ledger-types.index') }}"> Ledger Types </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('transaction-purposes.index') }}"> Transaction Purposes </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('transaction-items.index') }}"> Transaction Items </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('ledgers.index') }}"> Ledgers </a>
-                    </li>
-                </ul>
-            </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('orders.index') }}">
-            <span class="menu-title">Manage Orders</span>
-            <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('offers.index') }}">
-            <span class="menu-title">Manage Offers</span>
-            <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('expenses.index') }}">
-            <span class="menu-title">Manage Expenses</span>
-            <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('tags.index') }}">
-            <span class="menu-title">Manage tags</span>
-            <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('product-tags.index') }}">
-            <span class="menu-title">Manage product-tags</span>
-            <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('web-sliders.index') }}">
-            <span class="menu-title">Manage sliders</span>
-            <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li>
-        <!-- <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-                <span class="menu-title">Basic UI Elements</span>
+                <span class="menu-title">Catalog</span>
                 <i class="menu-arrow"></i>
                 <i class="mdi mdi-crosshairs-gps menu-icon"></i>
             </a>
             <div class="collapse" id="ui-basic">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/ui-features/buttons.html">Buttons</a>
+                        <a class="nav-link" href="{{ route('admin.categories.index') }}">Categories</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/ui-features/dropdowns.html">Dropdowns</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="pages/ui-features/typography.html">Typography</a>
+                        <a class="nav-link" href="{{ route('admin.sub-categories.index') }}">Sub-Categories</a>
                     </li>
                 </ul>
             </div>
-        </li> -->
+        </li>
         <!-- <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
                 <span class="menu-title">Icons</span>

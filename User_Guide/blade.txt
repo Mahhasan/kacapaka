@@ -1,0 +1,1969 @@
+<!--
+|--------------------------------------------------------------------------
+| 1. DASHBOARD
+|--------------------------------------------------------------------------
+| File Path: resources/views/admin/dashboard.blade.php
+-->
+@extends('layouts.app')
+
+@section('content')
+<div class="content-wrapper p-4">
+    <!-- Page Title -->
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="display-6">Admin Dashboard</h1>
+            <p class="text-muted">Welcome back, {{ Auth::user()->name }}!</p>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mt-2">
+        <!-- Total Sales Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="bi bi-currency-dollar fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="card-title text-muted mb-1">Total Sales</h5>
+                            <h4 class="mb-0">৳ {{ number_format($totalSales ?? 0, 2) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Orders Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                             <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="bi bi-box-seam fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="card-title text-muted mb-1">Total Orders</h5>
+                            <h4 class="mb-0">{{ $totalOrders ?? 0 }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Customers Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                             <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="bi bi-people fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="card-title text-muted mb-1">Total Customers</h5>
+                            <h4 class="mb-0">{{ $totalCustomers ?? 0 }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Orders Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                             <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="bi bi-clock-history fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="card-title text-muted mb-1">Pending Orders</h5>
+                            <h4 class="mb-0">{{ $pendingOrders ?? 0 }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts & Recent Activity Section -->
+    <div class="row g-4 mt-4">
+        <!-- Sales Chart -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                 <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart-line me-2"></i>Sales Overview (Last 7 Days)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="salesChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Recent Orders</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <tbody>
+                                @forelse($recentOrders as $order)
+                                <tr>
+                                    <td>
+                                        <strong>{{ $order->order_number }}</strong><br>
+                                        <small class="text-muted">{{ $order->customer->name ?? 'N/A' }}</small>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong>৳{{ number_format($order->total_amount, 2) }}</strong><br>
+                                        <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill">{{ $order->order_status }}</span>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td class="text-center text-muted">No recent orders.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: @json($salesData['labels'] ?? []),
+                datasets: [{
+                    label: 'Sales',
+                    data: @json($salesData['data'] ?? []),
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } },
+                plugins: { legend: { display: false } }
+            }
+        });
+    });
+</script>
+@endpush
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 2. CATEGORIES
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/categories/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Categories</h1>
+        <a href="{{ route('admin.categories.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New Category</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Image</th>
+                            <th>Category Name</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($categories as $key => $category)
+                        <tr>
+                            <td>{{ $key + 1 }}</td>
+                            <td>
+                                <img src="{{ $category->image ? asset('storage/' . $category->image) : 'https://placehold.co/60x60/EFEFEF/AAAAAA&text=No+Image' }}" alt="{{ $category->cat_name }}" class="rounded" width="50" height="50" style="object-fit: cover;">
+                            </td>
+                            <td><strong>{{ $category->cat_name }}</strong></td>
+                            <td>
+                                @if($category->is_active)
+                                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill">Active</span>
+                                @else
+                                    <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Inactive</span>
+                                @endif
+                            </td>
+                            <td>{{ $category->created_at->format('d M, Y') }}</td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil-square"></i></a>
+                                <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="6" class="text-center text-muted">No categories found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/categories/create.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Add New Category</h1>
+        <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="mb-3">
+                    <label for="cat_name" class="form-label">Category Name*</label>
+                    <input type="text" class="form-control" id="cat_name" name="cat_name" value="{{ old('cat_name') }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4">{{ old('description') }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Category Image</label>
+                    <input class="form-control" type="file" id="image" name="image">
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/categories/edit.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Edit Category</h1>
+        <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label for="cat_name" class="form-label">Category Name*</label>
+                    <input type="text" class="form-control" id="cat_name" name="cat_name" value="{{ old('cat_name', $category->cat_name) }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4">{{ old('description', $category->description) }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Category Image</label>
+                    <input class="form-control" type="file" id="image" name="image">
+                    @if($category->image)
+                        <div class="mt-2"><img src="{{ asset('storage/' . $category->image) }}" alt="Current Image" class="rounded" width="100"></div>
+                    @endif
+                </div>
+                <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" @if(old('is_active', $category->is_active)) checked @endif>
+                    <label class="form-check-label" for="is_active">Active Status</label>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Update Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 3. SUB-CATEGORIES
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/sub_categories/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Sub-Categories</h1>
+        <a href="{{ route('admin.sub-categories.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Sub-Category Name</th>
+                            <th>Parent Category</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($subCategories as $key => $subCategory)
+                        <tr>
+                            <td>{{ $key + 1 }}</td>
+                            <td><strong>{{ $subCategory->subcat_name }}</strong></td>
+                            <td>{{ $subCategory->category->cat_name }}</td>
+                            <td>
+                                @if($subCategory->is_active)
+                                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill">Active</span>
+                                @else
+                                    <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Inactive</span>
+                                @endif
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.sub-categories.edit', $subCategory->id) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil-square"></i></a>
+                                <form action="{{ route('admin.sub-categories.destroy', $subCategory->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="5" class="text-center text-muted">No sub-categories found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/sub_categories/create.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Add New Sub-Category</h1>
+        <a href="{{ route('admin.sub-categories.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.sub-categories.store') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label for="category_id" class="form-label">Parent Category*</label>
+                    <select class="form-select" id="category_id" name="category_id" required>
+                        <option value="">Select a parent category</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->cat_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="subcat_name" class="form-label">Sub-Category Name*</label>
+                    <input type="text" class="form-control" id="subcat_name" name="subcat_name" required>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Save Sub-Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/sub_categories/edit.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Edit Sub-Category</h1>
+        <a href="{{ route('admin.sub-categories.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.sub-categories.update', $subCategory->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label for="category_id" class="form-label">Parent Category*</label>
+                    <select class="form-select" id="category_id" name="category_id" required>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" @selected($subCategory->category_id == $category->id)>{{ $category->cat_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="subcat_name" class="form-label">Sub-Category Name*</label>
+                    <input type="text" class="form-control" id="subcat_name" name="subcat_name" value="{{ $subCategory->subcat_name }}" required>
+                </div>
+                <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" @if($subCategory->is_active) checked @endif>
+                    <label class="form-check-label" for="is_active">Active Status</label>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Update Sub-Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 4. BRANDS
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/brands/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Brands</h1>
+        <a href="{{ route('admin.brands.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New Brand</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Logo</th>
+                            <th>Brand Name</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($brands as $key => $brand)
+                        <tr>
+                            <td>{{ $key + 1 }}</td>
+                            <td>
+                                <img src="{{ $brand->logo ? asset('storage/' . $brand->logo) : 'https://placehold.co/60x60/EFEFEF/AAAAAA&text=No+Logo' }}" alt="{{ $brand->brand_name }}" class="rounded" width="50" height="50" style="object-fit: contain;">
+                            </td>
+                            <td><strong>{{ $brand->brand_name }}</strong></td>
+                            <td>
+                                @if($brand->is_active)
+                                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill">Active</span>
+                                @else
+                                    <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Inactive</span>
+                                @endif
+                            </td>
+                            <td>{{ $brand->created_at->format('d M, Y') }}</td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.brands.edit', $brand->id) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil-square"></i></a>
+                                <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="6" class="text-center text-muted">No brands found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/brands/create.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Add New Brand</h1>
+        <a href="{{ route('admin.brands.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.brands.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="mb-3">
+                    <label for="brand_name" class="form-label">Brand Name*</label>
+                    <input type="text" class="form-control" id="brand_name" name="brand_name" value="{{ old('brand_name') }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="logo" class="form-label">Brand Logo</label>
+                    <input class="form-control" type="file" id="logo" name="logo">
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Save Brand</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/brands/edit.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Edit Brand</h1>
+        <a href="{{ route('admin.brands.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.brands.update', $brand->id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label for="brand_name" class="form-label">Brand Name*</label>
+                    <input type="text" class="form-control" id="brand_name" name="brand_name" value="{{ old('brand_name', $brand->brand_name) }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="logo" class="form-label">Brand Logo</label>
+                    <input class="form-control" type="file" id="logo" name="logo">
+                    @if($brand->logo)
+                        <div class="mt-2"><img src="{{ asset('storage/' . $brand->logo) }}" alt="Current Logo" class="rounded" width="100"></div>
+                    @endif
+                </div>
+                <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" @if(old('is_active', $brand->is_active)) checked @endif>
+                    <label class="form-check-label" for="is_active">Active Status</label>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Update Brand</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 5. TAGS
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/tags/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Tags</h1>
+        <a href="{{ route('admin.tags.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New Tag</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Tag Name</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($tags as $key => $tag)
+                        <tr>
+                            <td>{{ $key + 1 }}</td>
+                            <td><strong>{{ $tag->tag_name }}</strong></td>
+                            <td>
+                                @if($tag->is_active)
+                                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill">Active</span>
+                                @else
+                                    <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Inactive</span>
+                                @endif
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.tags.edit', $tag->id) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil-square"></i></a>
+                                <form action="{{ route('admin.tags.destroy', $tag->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="4" class="text-center text-muted">No tags found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/tags/create.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Add New Tag</h1>
+        <a href="{{ route('admin.tags.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.tags.store') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label for="tag_name" class="form-label">Tag Name*</label>
+                    <input type="text" class="form-control" id="tag_name" name="tag_name" required>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Save Tag</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/tags/edit.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Edit Tag</h1>
+        <a href="{{ route('admin.tags.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.tags.update', $tag->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label for="tag_name" class="form-label">Tag Name*</label>
+                    <input type="text" class="form-control" id="tag_name" name="tag_name" value="{{ $tag->tag_name }}" required>
+                </div>
+                <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" @if($tag->is_active) checked @endif>
+                    <label class="form-check-label" for="is_active">Active Status</label>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Update Tag</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 6. PRODUCTS
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/products/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Products</h1>
+        <a href="{{ route('admin.products.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New Product</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Image</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($products as $product)
+                        <tr>
+                            <td>
+                                <img src="{{ $product->thumbnail_image ? asset('storage/' . $product->thumbnail_image) : 'https://placehold.co/60x60/EFEFEF/AAAAAA&text=No+Image' }}" alt="{{ $product->product_name }}" class="rounded" width="50" height="50" style="object-fit: cover;">
+                            </td>
+                            <td>
+                                <strong>{{ $product->product_name }}</strong><br>
+                                <small class="text-muted">SKU: {{ $product->sku ?? 'N/A' }}</small>
+                            </td>
+                            <td>{{ $product->subCategory->subcat_name ?? 'N/A' }}</td>
+                            <td>৳{{ number_format($product->selling_price, 2) }}</td>
+                            <td>{{ $product->stock_quantity }}</td>
+                            <td>
+                                @if($product->is_active)
+                                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill">Active</span>
+                                @else
+                                    <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Inactive</span>
+                                @endif
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil-square"></i></a>
+                                <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="7" class="text-center text-muted">No products found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/products/create.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Add New Product</h1>
+        <a href="{{ route('admin.products.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3"><h5 class="mb-0">Product Information</h5></div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="product_name" class="form-label">Product Name*</label>
+                            <input type="text" class="form-control" id="product_name" name="product_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="short_description" class="form-label">Short Description</label>
+                            <textarea class="form-control" id="short_description" name="short_description" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Long Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="6"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0 mt-4">
+                    <div class="card-header bg-white py-3"><h5 class="mb-0">Pricing & Stock</h5></div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="selling_price" class="form-label">Selling Price (৳)*</label>
+                                <input type="number" class="form-control" id="selling_price" name="selling_price" step="0.01" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="discount_price" class="form-label">Discount Price (৳)</label>
+                                <input type="number" class="form-control" id="discount_price" name="discount_price" step="0.01">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="stock_quantity" class="form-label">Stock Quantity*</label>
+                                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" required>
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="sku" class="form-label">SKU</label>
+                                <input type="text" class="form-control" id="sku" name="sku">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3"><h5 class="mb-0">Organization</h5></div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="sub_category_id" class="form-label">Category*</label>
+                            <select class="form-select" id="sub_category_id" name="sub_category_id" required>
+                                <option value="">Select a category</option>
+                                @foreach($subCategories as $subCategory)
+                                    <option value="{{ $subCategory->id }}">{{ $subCategory->category->cat_name }} > {{ $subCategory->subcat_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="brand_id" class="form-label">Brand</label>
+                            <select class="form-select" id="brand_id" name="brand_id">
+                                <option value="">Select a brand</option>
+                                @foreach($brands as $brand)
+                                    <option value="{{ $brand->id }}">{{ $brand->brand_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">Tags</label>
+                            <select class="form-select" id="tags" name="tags[]" multiple>
+                                @foreach($tags as $tag)
+                                    <option value="{{ $tag->id }}">{{ $tag->tag_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0 mt-4">
+                     <div class="card-header bg-white py-3"><h5 class="mb-0">Media</h5></div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="thumbnail_image" class="form-label">Thumbnail Image*</label>
+                            <input class="form-control" type="file" id="thumbnail_image" name="thumbnail_image" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0 mt-4">
+                     <div class="card-header bg-white py-3"><h5 class="mb-0">Actions</h5></div>
+                    <div class="card-body">
+                         <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" checked>
+                            <label class="form-check-label" for="is_active">Publish Product</label>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Save Product</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/products/edit.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Edit Product</h1>
+        <a href="{{ route('admin.products.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3"><h5 class="mb-0">Product Information</h5></div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="product_name" class="form-label">Product Name*</label>
+                            <input type="text" class="form-control" id="product_name" name="product_name" value="{{ old('product_name', $product->product_name) }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="short_description" class="form-label">Short Description</label>
+                            <textarea class="form-control" id="short_description" name="short_description" rows="3">{{ old('short_description', $product->short_description) }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Long Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="6">{{ old('description', $product->description) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0 mt-4">
+                    <div class="card-header bg-white py-3"><h5 class="mb-0">Pricing & Stock</h5></div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="selling_price" class="form-label">Selling Price (৳)*</label>
+                                <input type="number" class="form-control" id="selling_price" name="selling_price" step="0.01" value="{{ old('selling_price', $product->selling_price) }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="discount_price" class="form-label">Discount Price (৳)</label>
+                                <input type="number" class="form-control" id="discount_price" name="discount_price" step="0.01" value="{{ old('discount_price', $product->discount_price) }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="stock_quantity" class="form-label">Stock Quantity*</label>
+                                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" value="{{ old('stock_quantity', $product->stock_quantity) }}" required>
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="sku" class="form-label">SKU</label>
+                                <input type="text" class="form-control" id="sku" name="sku" value="{{ old('sku', $product->sku) }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3"><h5 class="mb-0">Organization</h5></div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="sub_category_id" class="form-label">Category*</label>
+                            <select class="form-select" id="sub_category_id" name="sub_category_id" required>
+                                @foreach($subCategories as $subCategory)
+                                    <option value="{{ $subCategory->id }}" @selected(old('sub_category_id', $product->sub_category_id) == $subCategory->id)>
+                                        {{ $subCategory->category->cat_name }} > {{ $subCategory->subcat_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="brand_id" class="form-label">Brand</label>
+                            <select class="form-select" id="brand_id" name="brand_id">
+                                <option value="">Select a brand</option>
+                                @foreach($brands as $brand)
+                                    <option value="{{ $brand->id }}" @selected(old('brand_id', $product->brand_id) == $brand->id)>{{ $brand->brand_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">Tags</label>
+                            <select class="form-select" id="tags" name="tags[]" multiple>
+                                @foreach($tags as $tag)
+                                    <option value="{{ $tag->id }}" @selected(in_array($tag->id, old('tags', $product->tags->pluck('id')->toArray())))>{{ $tag->tag_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0 mt-4">
+                     <div class="card-header bg-white py-3"><h5 class="mb-0">Media</h5></div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="thumbnail_image" class="form-label">Thumbnail Image</label>
+                            <input class="form-control" type="file" id="thumbnail_image" name="thumbnail_image">
+                            @if($product->thumbnail_image)
+                            <div class="mt-2"><img src="{{ asset('storage/' . $product->thumbnail_image) }}" alt="Current Thumbnail" class="rounded" width="100"></div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0 mt-4">
+                     <div class="card-header bg-white py-3"><h5 class="mb-0">Actions</h5></div>
+                    <div class="card-body">
+                         <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" @if(old('is_active', $product->is_active)) checked @endif>
+                            <label class="form-check-label" for="is_active">Publish Product</label>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Update Product</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 7. ORDERS
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/orders/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Orders</h1>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Payment Status</th>
+                            <th>Order Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($orders as $order)
+                        <tr>
+                            <td><strong>{{ $order->order_number }}</strong></td>
+                            <td>{{ $order->customer->name ?? 'N/A' }}</td>
+                            <td>{{ $order->created_at->format('d M, Y') }}</td>
+                            <td>৳{{ number_format($order->total_amount, 2) }}</td>
+                            <td><span class="badge bg-info-subtle text-info-emphasis rounded-pill">{{ $order->payment_status }}</span></td>
+                            <td><span class="badge bg-warning-subtle text-warning-emphasis rounded-pill">{{ $order->order_status }}</span></td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="7" class="text-center text-muted">No orders found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/orders/show.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Order Details</h1>
+        <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to Orders</a>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Order #{{ $order->order_number }}</h5>
+                    <span class="text-muted">{{ $order->created_at->format('F d, Y h:i A') }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($order->items as $item)
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ $item->product->thumbnail_image ? asset('storage/' . $item->product->thumbnail_image) : 'https://placehold.co/60x60' }}" class="rounded me-3" width="50" alt="">
+                                            <div>
+                                                <strong>{{ $item->product->product_name }}</strong>
+                                                <div class="text-muted small">SKU: {{ $item->product->sku ?? 'N/A' }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{{ $item->quantity }}</td>
+                                    <td class="text-end">৳{{ number_format($item->price_per_unit, 2) }}</td>
+                                    <td class="text-end">৳{{ number_format($item->total_price, 2) }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end">Subtotal</td>
+                                    <td class="text-end">৳{{ number_format($order->sub_total, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end">Discount</td>
+                                    <td class="text-end text-danger">- ৳{{ number_format($order->discount_amount, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end">Shipping Cost</td>
+                                    <td class="text-end">+ ৳{{ number_format($order->shipping_cost, 2) }}</td>
+                                </tr>
+                                <tr class="fw-bold">
+                                    <td colspan="3" class="text-end fs-5">Grand Total</td>
+                                    <td class="text-end fs-5">৳{{ number_format($order->total_amount, 2) }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3"><h5 class="mb-0">Customer Details</h5></div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> {{ $order->customer->name }}</p>
+                    <p><strong>Email:</strong> {{ $order->customer->email }}</p>
+                    <p><strong>Shipping Address:</strong><br>
+                        {{ $order->shippingAddress->address_line_1 }}, {{ $order->shippingAddress->city }}
+                    </p>
+                </div>
+            </div>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3"><h5 class="mb-0">Update Status</h5></div>
+                <div class="card-body">
+                    <form action="{{ route('admin.orders.update', $order->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="mb-3">
+                            <label for="order_status" class="form-label">Order Status</label>
+                            <select name="order_status" id="order_status" class="form-select">
+                                <option value="Pending" @selected($order->order_status == 'Pending')>Pending</option>
+                                <option value="Processing" @selected($order->order_status == 'Processing')>Processing</option>
+                                <option value="Shipped" @selected($order->order_status == 'Shipped')>Shipped</option>
+                                <option value="Delivered" @selected($order->order_status == 'Delivered')>Delivered</option>
+                                <option value="Cancelled" @selected($order->order_status == 'Cancelled')>Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="payment_status" class="form-label">Payment Status</label>
+                            <select name="payment_status" id="payment_status" class="form-select">
+                                <option value="Unpaid" @selected($order->payment_status == 'Unpaid')>Unpaid</option>
+                                <option value="Paid" @selected($order->payment_status == 'Paid')>Paid</option>
+                                <option value="Failed" @selected($order->payment_status == 'Failed')>Failed</option>
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 8. VENDORS
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/vendors/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Vendors</h1>
+        <a href="{{ route('admin.vendors.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New Vendor</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Vendor Name</th>
+                            <th>Contact Person</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($vendors as $key => $vendor)
+                        <tr>
+                            <td>{{ $key + 1 }}</td>
+                            <td><strong>{{ $vendor->vendor_name }}</strong></td>
+                            <td>{{ $vendor->contact_person }}</td>
+                            <td>{{ $vendor->phone }}</td>
+                            <td>
+                                @if($vendor->is_active)
+                                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill">Active</span>
+                                @else
+                                    <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Inactive</span>
+                                @endif
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.vendors.edit', $vendor->id) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil-square"></i></a>
+                                <form action="{{ route('admin.vendors.destroy', $vendor->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="6" class="text-center text-muted">No vendors found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/vendors/create.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Add New Vendor</h1>
+        <a href="{{ route('admin.vendors.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.vendors.store') }}" method="POST">
+                @csrf
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="vendor_name" class="form-label">Vendor Name*</label>
+                        <input type="text" class="form-control" id="vendor_name" name="vendor_name" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="contact_person" class="form-label">Contact Person</label>
+                        <input type="text" class="form-control" id="contact_person" name="contact_person">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">Phone*</label>
+                        <input type="text" class="form-control" id="phone" name="phone" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email">
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Save Vendor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/vendors/edit.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Edit Vendor</h1>
+        <a href="{{ route('admin.vendors.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.vendors.update', $vendor->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="vendor_name" class="form-label">Vendor Name*</label>
+                        <input type="text" class="form-control" id="vendor_name" name="vendor_name" value="{{ $vendor->vendor_name }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="contact_person" class="form-label">Contact Person</label>
+                        <input type="text" class="form-control" id="contact_person" name="contact_person" value="{{ $vendor->contact_person }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">Phone*</label>
+                        <input type="text" class="form-control" id="phone" name="phone" value="{{ $vendor->phone }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ $vendor->email }}">
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3">{{ $vendor->address }}</textarea>
+                    </div>
+                </div>
+                <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" @if($vendor->is_active) checked @endif>
+                    <label class="form-check-label" for="is_active">Active Status</label>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Update Vendor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 9. CUSTOMERS
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/customers/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Customers</h1>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Joined At</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($customers as $key => $customer)
+                        <tr>
+                            <td>{{ $key + 1 }}</td>
+                            <td><strong>{{ $customer->name }}</strong></td>
+                            <td>{{ $customer->email }}</td>
+                            <td>{{ $customer->created_at->format('d M, Y') }}</td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.customers.show', $customer->id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="5" class="text-center text-muted">No customers found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/customers/show.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Customer Details</h1>
+        <a href="{{ route('admin.customers.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <img src="https://placehold.co/100x100/EFEFEF/AAAAAA&text={{ substr($customer->name, 0, 1) }}" class="rounded-circle mb-3" alt="">
+                    <h4>{{ $customer->name }}</h4>
+                    <p class="text-muted">{{ $customer->email }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3"><h5 class="mb-0">Order History</h5></div>
+                <div class="card-body">
+                     <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($customer->orders as $order)
+                                <tr>
+                                    <td><a href="{{ route('admin.orders.show', $order->id) }}"><strong>{{ $order->order_number }}</strong></a></td>
+                                    <td>{{ $order->created_at->format('d M, Y') }}</td>
+                                    <td>৳{{ number_format($order->total_amount, 2) }}</td>
+                                    <td><span class="badge bg-success-subtle text-success-emphasis rounded-pill">{{ $order->order_status }}</span></td>
+                                </tr>
+                                @empty
+                                <tr><td colspan="4" class="text-center text-muted">No orders from this customer.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 10. PROMOTIONS
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/promotions/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Promotions / Coupons</h1>
+        <a href="{{ route('admin.promotions.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New Promotion</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Promo Code</th>
+                            <th>Type</th>
+                            <th>Value</th>
+                            <th>Validity</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($promotions as $promotion)
+                        <tr>
+                            <td><strong>{{ $promotion->promo_code }}</strong></td>
+                            <td>{{ $promotion->type }}</td>
+                            <td>{{ $promotion->type == 'Percentage' ? $promotion->value . '%' : '৳' . number_format($promotion->value, 2) }}</td>
+                            <td>{{ \Carbon\Carbon::parse($promotion->start_date)->format('d M') }} - {{ \Carbon\Carbon::parse($promotion->end_date)->format('d M, Y') }}</td>
+                            <td>
+                                @if($promotion->is_active)
+                                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill">Active</span>
+                                @else
+                                    <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Inactive</span>
+                                @endif
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.promotions.edit', $promotion->id) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil-square"></i></a>
+                                <form action="{{ route('admin.promotions.destroy', $promotion->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="6" class="text-center text-muted">No promotions found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/promotions/create.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Add New Promotion</h1>
+        <a href="{{ route('admin.promotions.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.promotions.store') }}" method="POST">
+                @csrf
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="promo_code" class="form-label">Promo Code*</label>
+                        <input type="text" class="form-control" id="promo_code" name="promo_code" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="type" class="form-label">Discount Type*</label>
+                        <select class="form-select" id="type" name="type" required>
+                            <option value="Percentage">Percentage</option>
+                            <option value="Fixed Amount">Fixed Amount</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="value" class="form-label">Value*</label>
+                        <input type="number" class="form-control" id="value" name="value" step="0.01" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="usage_limit" class="form-label">Usage Limit (Optional)</label>
+                        <input type="number" class="form-control" id="usage_limit" name="usage_limit">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="start_date" class="form-label">Start Date*</label>
+                        <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="end_date" class="form-label">End Date*</label>
+                        <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Save Promotion</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/promotions/edit.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Edit Promotion</h1>
+        <a href="{{ route('admin.promotions.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.promotions.update', $promotion->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="promo_code" class="form-label">Promo Code*</label>
+                        <input type="text" class="form-control" id="promo_code" name="promo_code" value="{{ $promotion->promo_code }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="type" class="form-label">Discount Type*</label>
+                        <select class="form-select" id="type" name="type" required>
+                            <option value="Percentage" @selected($promotion->type == 'Percentage')>Percentage</option>
+                            <option value="Fixed Amount" @selected($promotion->type == 'Fixed Amount')>Fixed Amount</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="value" class="form-label">Value*</label>
+                        <input type="number" class="form-control" id="value" name="value" step="0.01" value="{{ $promotion->value }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="usage_limit" class="form-label">Usage Limit (Optional)</label>
+                        <input type="number" class="form-control" id="usage_limit" name="usage_limit" value="{{ $promotion->usage_limit }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="start_date" class="form-label">Start Date*</label>
+                        <input type="datetime-local" class="form-control" id="start_date" name="start_date" value="{{ \Carbon\Carbon::parse($promotion->start_date)->format('Y-m-d\TH:i') }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="end_date" class="form-label">End Date*</label>
+                        <input type="datetime-local" class="form-control" id="end_date" name="end_date" value="{{ \Carbon\Carbon::parse($promotion->end_date)->format('Y-m-d\TH:i') }}" required>
+                    </div>
+                </div>
+                <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" @if($promotion->is_active) checked @endif>
+                    <label class="form-check-label" for="is_active">Active Status</label>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Update Promotion</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 11. REVIEWS
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/reviews/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Product Reviews</h1>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product</th>
+                            <th>Customer</th>
+                            <th>Rating</th>
+                            <th>Review</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($reviews as $review)
+                        <tr>
+                            <td>{{ $review->product->product_name }}</td>
+                            <td>{{ $review->customer->name }}</td>
+                            <td>{{ $review->rating }} <i class="bi bi-star-fill text-warning"></i></td>
+                            <td>{{ Str::limit($review->review_text, 50) }}</td>
+                            <td>
+                                @if($review->is_approved)
+                                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill">Approved</span>
+                                @else
+                                    <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill">Pending</span>
+                                @endif
+                            </td>
+                            <td class="text-end">
+                                <form action="{{ route('admin.reviews.update', $review->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="is_approved" value="{{ $review->is_approved ? 0 : 1 }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-success me-2">
+                                        {{ $review->is_approved ? 'Unapprove' : 'Approve' }}
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="6" class="text-center text-muted">No reviews found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 12. EXPENSE MANAGEMENT
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/expense_categories/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Expense Categories</h1>
+        <a href="{{ route('admin.expense-categories.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Category Name</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($expenseCategories as $key => $category)
+                        <tr>
+                            <td>{{ $key + 1 }}</td>
+                            <td><strong>{{ $category->exp_cat_name }}</strong></td>
+                            <td>
+                                @if($category->is_active)
+                                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill">Active</span>
+                                @else
+                                    <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Inactive</span>
+                                @endif
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.expense-categories.edit', $category->id) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil-square"></i></a>
+                                <form action="{{ route('admin.expense-categories.destroy', $category->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="4" class="text-center text-muted">No expense categories found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/expense_categories/create.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Add Expense Category</h1>
+        <a href="{{ route('admin.expense-categories.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.expense-categories.store') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label for="exp_cat_name" class="form-label">Category Name*</label>
+                    <input type="text" class="form-control" id="exp_cat_name" name="exp_cat_name" required>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/expense_categories/edit.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Edit Expense Category</h1>
+        <a href="{{ route('admin.expense-categories.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.expense-categories.update', $expenseCategory->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="mb-3">
+                    <label for="exp_cat_name" class="form-label">Category Name*</label>
+                    <input type="text" class="form-control" id="exp_cat_name" name="exp_cat_name" value="{{ $expenseCategory->exp_cat_name }}" required>
+                </div>
+                <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" @if($expenseCategory->is_active) checked @endif>
+                    <label class="form-check-label" for="is_active">Active Status</label>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Update Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/expenses/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Expenses</h1>
+        <a href="{{ route('admin.expenses.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Record New Expense</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Recorded By</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($expenses as $expense)
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($expense->expense_date)->format('d M, Y') }}</td>
+                            <td>{{ $expense->category->exp_cat_name }}</td>
+                            <td>{{ Str::limit($expense->description, 50) }}</td>
+                            <td><strong>৳{{ number_format($expense->amount, 2) }}</strong></td>
+                            <td>{{ $expense->creator->name }}</td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.expenses.edit', $expense->id) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil-square"></i></a>
+                                <form action="{{ route('admin.expenses.destroy', $expense->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="6" class="text-center text-muted">No expenses found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/expenses/create.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Record New Expense</h1>
+        <a href="{{ route('admin.expenses.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.expenses.store') }}" method="POST">
+                @csrf
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="expense_category_id" class="form-label">Expense Category*</label>
+                        <select class="form-select" id="expense_category_id" name="expense_category_id" required>
+                            <option value="">Select a category</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->exp_cat_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="amount" class="form-label">Amount (৳)*</label>
+                        <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="expense_date" class="form-label">Expense Date*</label>
+                        <input type="date" class="form-control" id="expense_date" name="expense_date" value="{{ date('Y-m-d') }}" required>
+                    </div>
+                    <div class="col-12 mb-3">
+                         <label for="description" class="form-label">Description*</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Save Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+<!-- File Path: resources/views/admin/expenses/edit.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Edit Expense</h1>
+        <a href="{{ route('admin.expenses.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form action="{{ route('admin.expenses.update', $expense->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="expense_category_id" class="form-label">Expense Category*</label>
+                        <select class="form-select" id="expense_category_id" name="expense_category_id" required>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" @selected($expense->expense_category_id == $category->id)>{{ $category->exp_cat_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="amount" class="form-label">Amount (৳)*</label>
+                        <input type="number" class="form-control" id="amount" name="amount" step="0.01" value="{{ $expense->amount }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="expense_date" class="form-label">Expense Date*</label>
+                        <input type="date" class="form-control" id="expense_date" name="expense_date" value="{{ $expense->expense_date }}" required>
+                    </div>
+                    <div class="col-12 mb-3">
+                         <label for="description" class="form-label">Description*</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required>{{ $expense->description }}</textarea>
+                    </div>
+                </div>
+                 <div class="mb-3 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" @if($expense->is_active) checked @endif>
+                    <label class="form-check-label" for="is_active">Active Status</label>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Update Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+
+<!--
+|--------------------------------------------------------------------------
+| 13. TRANSACTIONS
+|--------------------------------------------------------------------------
+-->
+
+<!-- File Path: resources/views/admin/transactions/index.blade.php -->
+@extends('layouts.app')
+@section('content')
+<div class="content-wrapper p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-6">Transactions Ledger</h1>
+    </div>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Source</th>
+                            <th class="text-end">Credit</th>
+                            <th class="text-end">Debit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($transactions as $transaction)
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($transaction->transaction_date)->format('d M, Y h:i A') }}</td>
+                            <td>{{ $transaction->description }}</td>
+                            <td>
+                                @if($transaction->sourceable_type == 'App\Models\Order')
+                                    <a href="{{ route('admin.orders.show', $transaction->sourceable_id) }}">Order #{{ $transaction->sourceable->order_number }}</a>
+                                @elseif($transaction->sourceable_type == 'App\Models\Expense')
+                                    Expense
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                            <td class="text-end text-success">
+                                @if($transaction->type == 'Credit')
+                                    <strong>৳{{ number_format($transaction->amount, 2) }}</strong>
+                                @endif
+                            </td>
+                            <td class="text-end text-danger">
+                                 @if($transaction->type == 'Debit')
+                                    <strong>৳{{ number_format($transaction->amount, 2) }}</strong>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="5" class="text-center text-muted">No transactions found.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
