@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-12">
             <h1 class="display-6">Admin Dashboard</h1>
-            <p class="text-muted">Welcome back, {{ Auth::user()->name }}!</p>
+            <!-- <p class="text-muted">Welcome back, {{ Auth::user()->name }}!</p> -->
         </div>
     </div>
 

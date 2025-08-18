@@ -8,8 +8,12 @@
                     <!--change to offline or busy as needed-->
                 </div>
                 <div class="nav-profile-text d-flex flex-column">
-                    <span class="font-weight-bold mb-2">David Grey. H</span>
-                    <span class="text-secondary text-small">Project Manager</span>
+                    <span class="font-weight-bold mb-2">
+                        @if(auth()->check())
+                            {{ auth()->user()->name }}
+                        @endif
+                    </span>
+                    <span class="text-secondary text-small">{{ Auth::user()->getRoleNames()->implode(', ') }}</span>
                 </div>
                 <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
             </a>
@@ -20,110 +24,110 @@
             <i class="mdi mdi-home menu-icon"></i>
             </a>
         </li>
-<li class="nav-item">
-    <a class="nav-link" data-bs-toggle="collapse" href="#user-management" aria-expanded="false" aria-controls="user-management">
-        <span class="menu-title">User Management</span>
-        <i class="menu-arrow"></i>
-        <i class="mdi mdi-account-group menu-icon"></i>
-    </a>
-    <div class="collapse" id="user-management">
-        <ul class="nav flex-column sub-menu">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.employees.index') }}">Employees</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.customers.index') }}">Customers</a>
-            </li>
-        </ul>
-    </div>
-</li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#user-management" aria-expanded="false" aria-controls="user-management">
+            <span class="menu-title">User Management</span>
+            <i class="menu-arrow"></i>
+            <i class="mdi mdi-account-group menu-icon"></i>
+        </a>
+        <div class="collapse" id="user-management">
+            <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.employees.index') }}">Employees</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.customers.index') }}">Customers</a>
+                </li>
+            </ul>
+        </div>
+    </li>
 
-<li class="nav-item">
-    <a class="nav-link" data-bs-toggle="collapse" href="#catalog-management" aria-expanded="false" aria-controls="catalog-management">
-        <span class="menu-title">Catalog Management</span>
-        <i class="menu-arrow"></i>
-        <i class="mdi mdi-store menu-icon"></i>
-    </a>
-    <div class="collapse" id="catalog-management">
-        <ul class="nav flex-column sub-menu">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.products.index') }}">Products</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.categories.index') }}">Categories</a>
-            </li>
-             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.sub-categories.index') }}">Sub-Categories</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.brands.index') }}">Brands</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.tags.index') }}">Tags</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.reviews.index') }}">Product Reviews</a>
-            </li>
-        </ul>
-    </div>
-</li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#catalog-management" aria-expanded="false" aria-controls="catalog-management">
+            <span class="menu-title">Catalog Management</span>
+            <i class="menu-arrow"></i>
+            <i class="mdi mdi-store menu-icon"></i>
+        </a>
+        <div class="collapse" id="catalog-management">
+            <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.products.index') }}">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.categories.index') }}">Categories</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.sub-categories.index') }}">Sub-Categories</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.brands.index') }}">Brands</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.tags.index') }}">Tags</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.reviews.index') }}">Product Reviews</a>
+                </li>
+            </ul>
+        </div>
+    </li>
 
-<li class="nav-item">
-    <a class="nav-link" data-bs-toggle="collapse" href="#inventory-management" aria-expanded="false" aria-controls="inventory-management">
-        <span class="menu-title">Inventory & Sourcing</span>
-        <i class="menu-arrow"></i>
-        <i class="mdi mdi-archive menu-icon"></i>
-    </a>
-    <div class="collapse" id="inventory-management">
-        <ul class="nav flex-column sub-menu">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.vendor.index') }}">Vendors</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.purchase-orders.index') }}">Purchase Orders</a>
-            </li>
-        </ul>
-    </div>
-</li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#inventory-management" aria-expanded="false" aria-controls="inventory-management">
+            <span class="menu-title">Inventory & Sourcing</span>
+            <i class="menu-arrow"></i>
+            <i class="mdi mdi-archive menu-icon"></i>
+        </a>
+        <div class="collapse" id="inventory-management">
+            <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.vendor.index') }}">Vendors</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.purchase-orders.index') }}">Purchase Orders</a>
+                </li>
+            </ul>
+        </div>
+    </li>
 
-<li class="nav-item">
-    <a class="nav-link" data-bs-toggle="collapse" href="#sales-management" aria-expanded="false" aria-controls="sales-management">
-        <span class="menu-title">Sales & Promotions</span>
-        <i class="menu-arrow"></i>
-        <i class="mdi mdi-cart menu-icon"></i>
-    </a>
-    <div class="collapse" id="sales-management">
-        <ul class="nav flex-column sub-menu">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.orders.index') }}">Orders</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.promotions.index') }}">Promotions</a>
-            </li>
-        </ul>
-    </div>
-</li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#sales-management" aria-expanded="false" aria-controls="sales-management">
+            <span class="menu-title">Sales & Promotions</span>
+            <i class="menu-arrow"></i>
+            <i class="mdi mdi-cart menu-icon"></i>
+        </a>
+        <div class="collapse" id="sales-management">
+            <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.orders.index') }}">Orders</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.promotions.index') }}">Promotions</a>
+                </li>
+            </ul>
+        </div>
+    </li>
 
-<li class="nav-item">
-    <a class="nav-link" data-bs-toggle="collapse" href="#finance-management" aria-expanded="false" aria-controls="finance-management">
-        <span class="menu-title">Finance Management</span>
-        <i class="menu-arrow"></i>
-        <i class="mdi mdi-currency-bdt menu-icon"></i>
-    </a>
-    <div class="collapse" id="finance-management">
-        <ul class="nav flex-column sub-menu">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.expense-categories.index') }}">Expense Categories</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.expenses.index') }}">Expenses</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.transactions.index') }}">Transactions</a>
-            </li>
-        </ul>
-    </div>
-</li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#finance-management" aria-expanded="false" aria-controls="finance-management">
+            <span class="menu-title">Finance Management</span>
+            <i class="menu-arrow"></i>
+            <i class="mdi mdi-currency-bdt menu-icon"></i>
+        </a>
+        <div class="collapse" id="finance-management">
+            <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.expense-categories.index') }}">Expense Categories</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.expenses.index') }}">Expenses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.transactions.index') }}">Transactions</a>
+                </li>
+            </ul>
+        </div>
+    </li>
 
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">

@@ -20951,7 +20951,7 @@ code {
 
 /* Footer */
 .footer {
-  background: #f2edf3;
+  background: #f8f9fa;
   color: color(dark);
   border-top: 1px solid #e7dee9;
   padding: 30px 1rem;
@@ -25144,7 +25144,7 @@ dl li {
 /* Navbar */
 .navbar {
   font-family: "ubuntu-light", sans-serif;
-  background: #fff;
+  background: #02353D;
   transition: background 0.25s ease;
   -webkit-transition: background 0.25s ease;
   -moz-transition: background 0.25s ease;
@@ -25158,7 +25158,7 @@ dl li {
   -webkit-transition: width 0.25s ease, background 0.25s ease;
   -moz-transition: width 0.25s ease, background 0.25s ease;
   -ms-transition: width 0.25s ease, background 0.25s ease;
-  background: #fff;
+  background: #012B30;
   width: 260px;
   height: 70px;
 }
@@ -25174,8 +25174,8 @@ dl li {
   margin-right: 0;
   padding: 0.25rem 0;
   width: 100%;
-  text-align: left;
-  padding-left: 2.25rem;
+  /* text-align: left;
+  padding-left: 2.25rem; */
 }
 .navbar .navbar-brand-wrapper .navbar-brand:active, .navbar .navbar-brand-wrapper .navbar-brand:focus, .navbar .navbar-brand-wrapper .navbar-brand:hover {
   color: #1b2658;
@@ -25191,7 +25191,7 @@ dl li {
   display: none;
 }
 .navbar .navbar-brand-wrapper .navbar-brand.brand-logo-mini img {
-  width: calc(70px - 50px);
+  width: calc(85px - 50px);
   max-width: 100%;
   height: 28px;
   margin: auto;
@@ -25328,7 +25328,7 @@ dl li {
   font-size: 1.25rem;
 }
 .navbar .navbar-menu-wrapper .navbar-nav .nav-item.dropdown .dropdown-toggle:after {
-  color: #018837;
+  color: #9c9fa6;
   font-size: 1rem;
 }
 .navbar .navbar-menu-wrapper .navbar-nav .nav-item.dropdown .dropdown-menu {
@@ -25635,7 +25635,7 @@ dl li {
 /* Sidebar */
 .sidebar {
   min-height: calc(100vh - 70px);
-  background: #ffffff;
+  background: #02353D;
   font-family: "ubuntu-regular", sans-serif;
   padding: 0;
   width: 260px;
@@ -25670,7 +25670,7 @@ dl li {
   align-items: center;
   white-space: nowrap;
   padding: 1.125rem 0 1.125rem 0;
-  color: #3e4b5b;
+  color: #EAEAEA;
   -webkit-transition-duration: 0.45s;
   -moz-transition-duration: 0.45s;
   -o-transition-duration: 0.45s;
@@ -25685,7 +25685,7 @@ dl li {
   font-size: 1.125rem;
   line-height: 1;
   margin-left: auto;
-  color: rgba(187, 168, 191, 0.9607843137);
+  color: #EAEAEA;
 }
 .rtl .sidebar .nav .nav-item .nav-link i.menu-icon {
   margin-left: 0;
@@ -25736,17 +25736,17 @@ dl li {
   content: "\f0140";
 }
 .sidebar .nav .nav-item.active {
-  background: #ffffff;
+  background: #012B30;
 }
 .sidebar .nav .nav-item.active > .nav-link .menu-title {
-  color: #018837;
+  color: #ffc107;
   font-family: "ubuntu-medium", sans-serif;
 }
 .sidebar .nav .nav-item.active > .nav-link i {
-  color: #018837;
+  color: #ffc107;
 }
 .sidebar .nav .nav-item:hover {
-  background: #fcfcfc;
+  background: #012B30;
 }
 .sidebar .nav .nav-item.nav-profile .nav-link {
   height: auto;
@@ -25793,7 +25793,7 @@ dl li {
   color: initial;
 }
 .sidebar .nav:not(.sub-menu) > .nav-item:hover:not(.nav-category):not(.nav-profile) > .nav-link {
-  color: #29323d;
+  color: #ffc107;
 }
 .sidebar .nav.sub-menu {
   margin-bottom: 20px;
@@ -25804,7 +25804,7 @@ dl li {
   padding: 0;
 }
 .sidebar .nav.sub-menu .nav-item .nav-link {
-  color: #888;
+  color: #F8F9FA;
   padding: 0.75rem 2rem 0.75rem 2rem;
   position: relative;
   font-size: 0.8125rem;
@@ -25833,11 +25833,11 @@ dl li {
   right: 0;
 }
 .sidebar .nav.sub-menu .nav-item .nav-link.active {
-  color: #018837;
+  color: #ffc107;
   background: transparent;
 }
 .sidebar .nav.sub-menu .nav-item .nav-link:hover {
-  color: #555555;
+  color: #ffc107;
 }
 .sidebar .nav.sub-menu .nav-item:hover {
   background: transparent;
@@ -26082,7 +26082,7 @@ dl li {
     display: flex;
     -webkit-align-items: center;
     align-items: center;
-    background: #fcfcfc;
+    background: #012B30;
     padding: 0.5rem 1.4rem;
     left: 70px;
     position: absolute;
@@ -26111,7 +26111,7 @@ dl li {
   .sidebar-icon-only .sidebar .nav .nav-item.hover-open .collapsing {
     display: block;
     padding: 0.5rem 0;
-    background: #fcfcfc;
+    background: #012B30;
     border-radius: 0 0 5px 0;
     position: absolute;
     left: 70px;
@@ -26280,7 +26280,7 @@ dl li {
 }
 
 .content-wrapper {
-  background: #f2edf3;
+  /* background: #f2edf3; */
   padding: 2.75rem 2.25rem;
   width: 100%;
   -webkit-flex-grow: 1;

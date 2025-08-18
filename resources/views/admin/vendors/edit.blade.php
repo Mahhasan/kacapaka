@@ -3,11 +3,11 @@
 <div class="content-wrapper p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="display-6">Edit Vendor</h1>
-        <a href="{{ route('admin.vendors.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+        <a href="{{ route('admin.vendor.index') }}" class="btn btn-outline-primary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
     </div>
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <form action="{{ route('admin.vendors.update', $vendor->id) }}" method="POST">
+            <form action="{{ route('admin.vendor.update', $vendor->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="row">

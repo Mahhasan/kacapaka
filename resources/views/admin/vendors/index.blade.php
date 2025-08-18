@@ -3,7 +3,7 @@
 <div class="content-wrapper p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="display-6">Vendors</h1>
-        <a href="{{ route('admin.vendors.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New Vendor</a>
+        <a href="{{ route('admin.vendor.create') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New Vendor</a>
     </div>
     <div class="card shadow-sm border-0">
         <div class="card-body">
@@ -34,8 +34,8 @@
                                 @endif
                             </td>
                             <td class="text-end">
-                                <a href="{{ route('admin.vendors.edit', $vendor->id) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil-square"></i></a>
-                                <form action="{{ route('admin.vendors.destroy', $vendor->id) }}" method="POST" class="d-inline delete-form">
+                                <a href="{{ route('admin.vendor.edit', $vendor->id) }}" class="btn btn-sm btn-outline-secondary me-2"><i class="bi bi-pencil-square"></i></a>
+                                <form action="{{ route('admin.vendor.destroy', $vendor->id) }}" method="POST" class="d-inline delete-form">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
