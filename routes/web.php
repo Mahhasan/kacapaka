@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 
 // Admin Controller Imports
+use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
@@ -18,9 +21,8 @@ use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\ProductReviewController;
-use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\EmployeeController;
-use App\Http\Controllers\FrontendController;
+
 
 // Frontend/Profile Controller Imports
 // use App\Http\Controllers\ProfileController;
@@ -56,14 +58,15 @@ Route::get('/home', [HomeController::class, 'index'])
 //     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 //     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
-
-
+Route::group(['middleware' => ['auth']], function() {
+    Route::resource('roles', RoleController::class);
+    Route::resource('users', UserController::class);
+});
 // 3. Admin Panel Routes
 //================================================
 // All admin routes are protected by auth and role middleware.
 // Only users with the 'Admin' role can access these routes.
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:Admin|Super Admin'])->group(function () {
-
     // Admin Dashboard
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
@@ -78,7 +81,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:Admin|Super Ad
     Route::resource('brands', BrandController::class);
     Route::resource('tags', TagController::class);
     Route::resource('products', ProductController::class);
-     Route::delete('product-images/{image}', [\App\Http\Controllers\Admin\ProductController::class, 'destroyImage'])->name('products.images.destroy');
     Route::resource('reviews', ProductReviewController::class)->only(['index', 'update', 'destroy']);
 
     // --- INVENTORY & SOURCING ---

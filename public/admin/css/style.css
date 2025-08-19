@@ -11445,19 +11445,19 @@ textarea.is-invalid.tt-hint, .select2-container--default .select2-selection--sin
 
 .btn-secondary {
   --bs-btn-color: #000;
-  --bs-btn-bg: #c3bdbd;
-  --bs-btn-border-color: #c3bdbd;
+  --bs-btn-bg: #ffb524;
+  --bs-btn-border-color: #ffb524;
   --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #ccc7c7;
-  --bs-btn-hover-border-color: #c9c4c4;
+  --bs-btn-hover-bg: #ffb524;
+  --bs-btn-hover-border-color: #ffb524;
   --bs-btn-focus-shadow-rgb: 166, 161, 161;
   --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #cfcaca;
+  --bs-btn-active-bg: #ffb524;
   --bs-btn-active-border-color: #c9c4c4;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   --bs-btn-disabled-color: #000;
-  --bs-btn-disabled-bg: #c3bdbd;
-  --bs-btn-disabled-border-color: #c3bdbd;
+  --bs-btn-disabled-bg: #ffb524;
+  --bs-btn-disabled-border-color: #ffb524;
 }
 
 .btn-success {
@@ -25739,11 +25739,11 @@ dl li {
   background: #012B30;
 }
 .sidebar .nav .nav-item.active > .nav-link .menu-title {
-  color: #ffc107;
+  color: #ffb524;
   font-family: "ubuntu-medium", sans-serif;
 }
 .sidebar .nav .nav-item.active > .nav-link i {
-  color: #ffc107;
+  color: #ffb524;
 }
 .sidebar .nav .nav-item:hover {
   background: #012B30;
@@ -25793,7 +25793,7 @@ dl li {
   color: initial;
 }
 .sidebar .nav:not(.sub-menu) > .nav-item:hover:not(.nav-category):not(.nav-profile) > .nav-link {
-  color: #ffc107;
+  color: #ffb524;
 }
 .sidebar .nav.sub-menu {
   margin-bottom: 20px;
@@ -25833,11 +25833,11 @@ dl li {
   right: 0;
 }
 .sidebar .nav.sub-menu .nav-item .nav-link.active {
-  color: #ffc107;
+  color: #ffb524;
   background: transparent;
 }
 .sidebar .nav.sub-menu .nav-item .nav-link:hover {
-  color: #ffc107;
+  color: #ffb524;
 }
 .sidebar .nav.sub-menu .nav-item:hover {
   background: transparent;

@@ -24,7 +24,7 @@
                         <tr>
                             <td>{{ $category->position }}</td>
                             <td>
-                                <img src="{{ $category->image ? asset('storage/' . $category->image) : 'https://placehold.co/60x60/EFEFEF/AAAAAA&text=No+Image' }}" alt="{{ $category->cat_name }}" class="rounded" width="50" height="50" style="object-fit: cover;">
+                                <img src="{{ asset($category->image) }}" alt="{{ $category->cat_name }}" class="rounded" width="50" height="50" style="object-fit: cover;">
                             </td>
                             <td><strong>{{ $category->cat_name }}</strong></td>
                             <td>

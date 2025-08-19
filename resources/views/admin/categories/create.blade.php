@@ -20,7 +20,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="image" class="form-label">Category Image</label>
-                    <input class="form-control @error('image') is-invalid @enderror" type="file" id="image" name="image">
+                    <input class="form-control @error('image') is-invalid @enderror" type="file" id="image" name="image" accept=".jpeg,.jpg,.png,.gif,.webp">
                     @error('image') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
                  <div class="mb-3">
@@ -36,4 +36,20 @@
         </div>
     </div>
 </div>
+<script>
+document.getElementById('image').addEventListener('change', function () {
+    const file = this.files[0];
+    if (file) {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            alert("Only JPG, PNG, GIF, WEBP formats are allowed.");
+            this.value = "";
+        }
+        if (file.size > 2048 * 1024) { // 2MB
+            alert("File size must be less than 2MB.");
+            this.value = "";
+        }
+    }
+});
+</script>
 @endsection

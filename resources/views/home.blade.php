@@ -144,7 +144,7 @@
 </div>
 
 @push('scripts')
-<script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
+<!-- <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script> -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('salesChart').getContext('2d');
@@ -156,7 +156,7 @@
                     label: 'Sales',
                     data: @json($salesData['data'] ?? []),
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderColor: 'rgb(1 136 55)',
                     borderWidth: 2,
                     tension: 0.4,
                     fill: true,
